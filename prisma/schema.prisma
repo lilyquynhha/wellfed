@@ -9,121 +9,134 @@ datasource db {
 
 model User {
   id       String @id @map("id") @db.Uuid
-  username String @unique @db.VarChar(50)
+  username String @unique @map("username") @db.VarChar(50)
 
   nutrients      Nutrient[]
   foods          Food[]
   favouriteFoods FavouriteFood[]
   creations      Creation[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
 }
 
 model Nutrient {
-  id    String @id @default(uuid())
-  name  String @db.VarChar(100)
+  id    String @id @default(uuid()) @map("id")
+  name  String @map("name") @db.VarChar(100)
   users User[]
+
+  @@map("nutrients")
 }
 
 model Food {
-  id        String   @id @default(uuid())
-  name      String   @db.VarChar(100)
-  type      FoodType
-  brandName String   @db.VarChar(100)
+  id        String   @id @default(uuid()) @map("id")
+  name      String   @map("name") @db.VarChar(100)
+  type      FoodType @map("type")
+  brandName String?   @map("brand_name") @db.VarChar(100)
 
   ownerUser   User?   @relation(fields: [ownerUserId], references: [id])
-  ownerUserId String? @db.Uuid
+  ownerUserId String? @map("owner_user_id") @db.Uuid
 
-  isPublic Boolean @default(false)
+  isPublic Boolean @default(false) @map("is_public")
 
   servings Serving[]
 
   favouritedFoods FavouriteFood[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("foods")
 }
 
 model FavouriteFood {
-  id String @id @default(uuid())
+  id String @id @default(uuid()) @map("id")
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @db.Uuid
+  userId String @map("user_id") @db.Uuid
   food   Food   @relation(fields: [foodId], references: [id], onDelete: Cascade)
-  foodId String
+  foodId String @map("food_id")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([userId, foodId])
+  @@map("favourite_foods")
 }
 
 model Serving {
-  id          String @id @default(uuid())
+  id          String @id @default(uuid()) @map("id")
   ownerFood   Food   @relation(fields: [ownerFoodId], references: [id], onDelete: Cascade)
-  ownerFoodId String
+  ownerFoodId String @map("owner_food_id")
 
-  servingUnit        ServingUnit
-  servingSize        Decimal
-  displayServingUnit String      @db.VarChar(100)
-  displayServingSize Decimal
-  cost               Decimal?
-  calories           Decimal
-  carbs              Decimal
-  protein            Decimal
-  fat                Decimal
-  saturatedFat       Decimal?
-  polyunsaturatedFat Decimal?
-  monounsaturatedFat Decimal?
-  transFat           Decimal?
-  cholesterol        Decimal?
-  fiber              Decimal?
-  sugar              Decimal?
-  addedSugars        Decimal?
-  sodium             Decimal?
-  potassium          Decimal?
-  vitaminA           Decimal?
-  vitaminC           Decimal?
-  vitaminD           Decimal?
-  calcium            Decimal?
-  iron               Decimal?
+  servingUnit        ServingUnit @map("serving_unit")
+  servingSize        Decimal     @map("serving_size")
+  displayServingUnit String      @map("display_serving_unit") @db.VarChar(100)
+  displayServingSize Decimal     @map("display_serving_size")
+  cost               Decimal?    @map("cost")
+  calories           Decimal     @map("calories")
+  carbs              Decimal     @map("carbs")
+  protein            Decimal     @map("protein")
+  fat                Decimal     @map("fat")
+  saturatedFat       Decimal?    @map("saturated_fat")
+  polyunsaturatedFat Decimal?    @map("polyunsaturated_fat")
+  monounsaturatedFat Decimal?    @map("monounsaturated_fat")
+  transFat           Decimal?    @map("trans_fat")
+  cholesterol        Decimal?    @map("cholesterol")
+  fiber              Decimal?    @map("fiber")
+  sugar              Decimal?    @map("sugar")
+  addedSugars        Decimal?    @map("added_sugars")
+  sodium             Decimal?    @map("sodium")
+  potassium          Decimal?    @map("potassium")
+  vitaminA           Decimal?    @map("vitamin_a")
+  vitaminC           Decimal?    @map("vitamin_c")
+  vitaminD           Decimal?    @map("vitamin_d")
+  calcium            Decimal?    @map("calcium")
+  iron               Decimal?    @map("iron")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   creations Ingredient[]
+
+  @@map("servings")
 }
 
 model Creation {
-  id String @id @default(uuid())
+  id String @id @default(uuid()) @map("id")
 
   user        User?        @relation(fields: [ownerUserId], references: [id])
-  ownerUserId String?      @db.Uuid
-  name        String       @db.VarChar(100)
-  type        CreationType
-  isPublic    Boolean      @default(false)
+  ownerUserId String?      @map("owner_user_id") @db.Uuid
+  name        String       @map("name") @db.VarChar(100)
+  type        CreationType @map("type")
+  isPublic    Boolean      @default(false) @map("is_public")
 
   servings Ingredient[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("creations")
 }
 
 model Ingredient {
-  id String @id @default(uuid())
+  id String @id @default(uuid()) @map("id")
 
   creation   Creation @relation(fields: [creationId], references: [id], onDelete: Cascade)
-  creationId String
+  creationId String   @map("creation_id")
   serving    Serving  @relation(fields: [servingId], references: [id], onDelete: Cascade)
-  servingId  String
+  servingId  String   @map("serving_id")
 
-  amount Decimal
+  amount Decimal @map("amount")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("ingredients")
 }
 
 enum FoodType {
