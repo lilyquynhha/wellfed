@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../lib/generated/prisma"
@@ -11,4 +5,139 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id       String @id @map("id") @db.Uuid
+  username String @unique @db.VarChar(50)
+
+  nutrients      Nutrient[]
+  foods          Food[]
+  favouriteFoods FavouriteFood[]
+  creations      Creation[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Nutrient {
+  id    String @id @default(uuid())
+  name  String @db.VarChar(100)
+  users User[]
+}
+
+model Food {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(100)
+  type      FoodType
+  brandName String   @db.VarChar(100)
+
+  ownerUser   User?   @relation(fields: [ownerUserId], references: [id])
+  ownerUserId String? @db.Uuid
+
+  isPublic Boolean @default(false)
+
+  servings Serving[]
+
+  favouritedFoods FavouriteFood[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model FavouriteFood {
+  id String @id @default(uuid())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @db.Uuid
+  food   Food   @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, foodId])
+}
+
+model Serving {
+  id          String @id @default(uuid())
+  ownerFood   Food   @relation(fields: [ownerFoodId], references: [id], onDelete: Cascade)
+  ownerFoodId String
+
+  servingUnit        ServingUnit
+  servingSize        Decimal
+  displayServingUnit String      @db.VarChar(100)
+  displayServingSize Decimal
+  cost               Decimal?
+  calories           Decimal
+  carbs              Decimal
+  protein            Decimal
+  fat                Decimal
+  saturatedFat       Decimal?
+  polyunsaturatedFat Decimal?
+  monounsaturatedFat Decimal?
+  transFat           Decimal?
+  cholesterol        Decimal?
+  fiber              Decimal?
+  sugar              Decimal?
+  addedSugars        Decimal?
+  sodium             Decimal?
+  potassium          Decimal?
+  vitaminA           Decimal?
+  vitaminC           Decimal?
+  vitaminD           Decimal?
+  calcium            Decimal?
+  iron               Decimal?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creations Ingredient[]
+}
+
+model Creation {
+  id String @id @default(uuid())
+
+  user        User?        @relation(fields: [ownerUserId], references: [id])
+  ownerUserId String?      @db.Uuid
+  name        String       @db.VarChar(100)
+  type        CreationType
+  isPublic    Boolean      @default(false)
+
+  servings Ingredient[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Ingredient {
+  id String @id @default(uuid())
+
+  creation   Creation @relation(fields: [creationId], references: [id], onDelete: Cascade)
+  creationId String
+  serving    Serving  @relation(fields: [servingId], references: [id], onDelete: Cascade)
+  servingId  String
+
+  amount Decimal
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum FoodType {
+  GENERIC
+  BRAND
+}
+
+enum ServingUnit {
+  ML
+  G
+  OZ
+}
+
+enum CreationType {
+  MEAL
+  RECIPE
 }
