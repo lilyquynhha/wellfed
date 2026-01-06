@@ -24,7 +24,7 @@ model User {
 
 model Nutrient {
   id    String @id @default(uuid()) @map("id")
-  name  String @map("name") @db.VarChar(100)
+  name  String @unique @map("name") @db.VarChar(100)
   users User[]
 
   @@map("nutrients")
@@ -34,7 +34,7 @@ model Food {
   id        String   @id @default(uuid()) @map("id")
   name      String   @map("name") @db.VarChar(100)
   type      FoodType @map("type")
-  brandName String?   @map("brand_name") @db.VarChar(100)
+  brandName String?  @map("brand_name") @db.VarChar(100)
 
   ownerUser   User?   @relation(fields: [ownerUserId], references: [id])
   ownerUserId String? @map("owner_user_id") @db.Uuid
