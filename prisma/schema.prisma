@@ -7,7 +7,7 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
+model Profile {
   id       String @id @map("id") @db.Uuid
   username String @unique @map("username") @db.VarChar(50)
 
@@ -19,13 +19,13 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  @@map("users")
+  @@map("profiles")
 }
 
 model Nutrient {
   id    String @id @default(uuid()) @map("id")
   name  String @unique @map("name") @db.VarChar(100)
-  users User[]
+  users Profile[]
 
   @@map("nutrients")
 }
@@ -36,7 +36,7 @@ model Food {
   type      FoodType @map("type")
   brandName String?  @map("brand_name") @db.VarChar(100)
 
-  ownerUser   User?   @relation(fields: [ownerUserId], references: [id])
+  ownerUser   Profile?   @relation(fields: [ownerUserId], references: [id])
   ownerUserId String? @map("owner_user_id") @db.Uuid
 
   isPublic Boolean @default(false) @map("is_public")
@@ -55,7 +55,7 @@ model Food {
 model FavouriteFood {
   id String @id @default(uuid()) @map("id")
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String @map("user_id") @db.Uuid
   food   Food   @relation(fields: [foodId], references: [id], onDelete: Cascade)
   foodId String @map("food_id")
@@ -108,7 +108,7 @@ model Serving {
 model Creation {
   id String @id @default(uuid()) @map("id")
 
-  user        User?        @relation(fields: [ownerUserId], references: [id])
+  user        Profile?        @relation(fields: [ownerUserId], references: [id])
   ownerUserId String?      @map("owner_user_id") @db.Uuid
   name        String       @map("name") @db.VarChar(100)
   type        CreationType @map("type")

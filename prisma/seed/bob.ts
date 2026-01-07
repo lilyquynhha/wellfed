@@ -49,7 +49,7 @@ export async function seedBob(prisma: PrismaClient) {
 
   // Create user with tracked nutrients and favourited foods
   const bob = "e099a7d6-6356-4fe0-8573-a8f2829b5f63";
-  await prisma.user.upsert({
+  await prisma.profile.upsert({
     where: { id: bob },
     create: {
       id: bob,

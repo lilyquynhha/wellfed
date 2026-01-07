@@ -3,7 +3,7 @@ import { PrismaClient } from "@/lib/generated/prisma/client";
 export async function seedAdmin(prisma: PrismaClient) {
   // Create admin user
   const admin = "9135c9eb-b292-40b7-beae-60789608ec94";
-  await prisma.user.upsert({
+  await prisma.profile.upsert({
     where: { id: admin },
     create: {
       id: admin,
