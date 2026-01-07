@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider   = "prisma-client"
+  output     = "../lib/generated/prisma"
 }
 
 datasource db {
@@ -100,7 +100,7 @@ model Serving {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  creations Ingredient[]
+  ingredientsOf Ingredient[]
 
   @@map("servings")
 }
@@ -114,7 +114,7 @@ model Creation {
   type        CreationType @map("type")
   isPublic    Boolean      @default(false) @map("is_public")
 
-  servings Ingredient[]
+  ingredients Ingredient[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")

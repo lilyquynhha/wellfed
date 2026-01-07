@@ -6,6 +6,7 @@ export default {
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    seed: "pnpm exec tsx prisma/seed/seed.ts"
   },
   datasource: { 
     url: env("DIRECT_URL") 
