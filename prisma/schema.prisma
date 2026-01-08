@@ -63,7 +63,6 @@ model FavouriteFood {
   foodId String  @map("food_id")
 
   createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@unique([userId, foodId])
   @@map("favourite_foods")
