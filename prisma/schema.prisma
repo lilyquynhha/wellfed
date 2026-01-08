@@ -8,8 +8,9 @@ datasource db {
 }
 
 model Profile {
-  id       String @id @map("id") @db.Uuid
-  username String @unique @map("username") @db.VarChar(50)
+  id       String  @id @map("id") @db.Uuid
+  username String  @unique @map("username") @db.VarChar(50)
+  isAdmin  Boolean @default(false) @map("is_admin")
 
   nutrients            Nutrient[]
   foods                Food[]
