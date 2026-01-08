@@ -1,6 +1,6 @@
 generator client {
-  provider   = "prisma-client"
-  output     = "../lib/generated/prisma"
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
@@ -11,10 +11,11 @@ model Profile {
   id       String @id @map("id") @db.Uuid
   username String @unique @map("username") @db.VarChar(50)
 
-  nutrients      Nutrient[]
-  foods          Food[]
-  favouriteFoods FavouriteFood[]
-  creations      Creation[]
+  nutrients            Nutrient[]
+  foods                Food[]
+  favouriteFoods       FavouriteFood[]
+  servingCostOverrides ServingCostOverride[]
+  creations            Creation[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -23,8 +24,8 @@ model Profile {
 }
 
 model Nutrient {
-  id    String @id @default(uuid()) @map("id")
-  name  String @unique @map("name") @db.VarChar(100)
+  id    String    @id @default(uuid()) @map("id")
+  name  String    @unique @map("name") @db.VarChar(100)
   users Profile[]
 
   @@map("nutrients")
@@ -36,8 +37,8 @@ model Food {
   type      FoodType @map("type")
   brandName String?  @map("brand_name") @db.VarChar(100)
 
-  ownerUser   Profile?   @relation(fields: [ownerUserId], references: [id])
-  ownerUserId String? @map("owner_user_id") @db.Uuid
+  ownerUser   Profile? @relation(fields: [ownerUserId], references: [id])
+  ownerUserId String?  @map("owner_user_id") @db.Uuid
 
   isPublic Boolean @default(false) @map("is_public")
 
@@ -55,10 +56,10 @@ model Food {
 model FavouriteFood {
   id String @id @default(uuid()) @map("id")
 
-  user   Profile   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @map("user_id") @db.Uuid
-  food   Food   @relation(fields: [foodId], references: [id], onDelete: Cascade)
-  foodId String @map("food_id")
+  user   Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String  @map("user_id") @db.Uuid
+  food   Food    @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  foodId String  @map("food_id")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -100,15 +101,32 @@ model Serving {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  costOverrides ServingCostOverride[]
   ingredientsOf Ingredient[]
 
   @@map("servings")
 }
 
+model ServingCostOverride {
+  id        String  @id @default(uuid()) @map("id")
+  user      Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String  @map("user_id") @db.Uuid
+  serving   Serving @relation(fields: [servingId], references: [id], onDelete: Cascade)
+  servingId String  @map("serving_id")
+
+  cost Decimal @map("cost")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, servingId])
+  @@map("serving_cost_overrides")
+}
+
 model Creation {
   id String @id @default(uuid()) @map("id")
 
-  user        Profile?        @relation(fields: [ownerUserId], references: [id])
+  user        Profile?     @relation(fields: [ownerUserId], references: [id])
   ownerUserId String?      @map("owner_user_id") @db.Uuid
   name        String       @map("name") @db.VarChar(100)
   type        CreationType @map("type")
