@@ -1,3 +1,5 @@
+DROP FUNCTION handle_user_delete();
+
 CREATE OR REPLACE FUNCTION handle_profile_delete()
     RETURNS TRIGGER
     AS $$
