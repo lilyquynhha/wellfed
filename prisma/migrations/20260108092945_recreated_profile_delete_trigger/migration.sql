@@ -1,37 +1,37 @@
 DROP FUNCTION handle_user_delete();
 
-CREATE OR REPLACE FUNCTION handle_profile_delete()
+CREATE OR REPLACE FUNCTION public.handle_profile_delete()
     RETURNS TRIGGER
+    SET search_path = public
     AS $$
 BEGIN
     DELETE FROM foods
     WHERE owner_user_id = OLD.id
         AND is_public = FALSE;
-
-    UPDATE foods
+    UPDATE
+        foods
     SET
         owner_user_id = NULL,
         deleted_at = now()
     WHERE
         owner_user_id = OLD.id
         AND is_public = TRUE;
-
     DELETE FROM creations
     WHERE owner_user_id = OLD.id
         AND is_public = FALSE;
-
-    UPDATE creations
+    UPDATE
+        creations
     SET
         owner_user_id = NULL,
         deleted_at = now()
     WHERE
         owner_user_id = OLD.id
         AND is_public = TRUE;
-        
     RETURN old;
 END;
 $$
-LANGUAGE plpgsql;
+LANGUAGE plpgsql
+SECURITY DEFINER;
 
 CREATE OR REPLACE TRIGGER on_profile_delete
     AFTER DELETE ON profiles

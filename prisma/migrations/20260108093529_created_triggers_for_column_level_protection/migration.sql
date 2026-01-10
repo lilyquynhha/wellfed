@@ -1,5 +1,6 @@
-CREATE OR REPLACE FUNCTION prevent_update_of_columns()
+CREATE OR REPLACE FUNCTION public.prevent_update_of_columns()
     RETURNS TRIGGER
+    SET search_path = public
     AS $$
 DECLARE
     col text;
@@ -13,7 +14,8 @@ BEGIN
     RETURN NEW;
 END;
 $$
-LANGUAGE plpgsql;
+LANGUAGE plpgsql
+SECURITY DEFINER;
 
 CREATE TRIGGER check_nutrient_update
     BEFORE UPDATE ON nutrients
