@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import "dotenv/config";
 import type { PrismaConfig } from "prisma";
 import { env } from "prisma/config";
 
@@ -6,9 +6,10 @@ export default {
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
-    seed: "pnpm exec tsx prisma/seed/seed.ts"
+    seed: "pnpm exec tsx prisma/seed/seed.ts",
   },
-  datasource: { 
-    url: env("DIRECT_URL") 
-  }
+  datasource: {
+    url: env("DIRECT_URL"),
+    shadowDatabaseUrl: env("SHADOW_DATABASE_URL"),
+  },
 } satisfies PrismaConfig;
