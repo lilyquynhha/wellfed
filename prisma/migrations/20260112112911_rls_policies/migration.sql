@@ -51,25 +51,25 @@ CREATE POLICY "Users can update their profile only." ON profiles
                         SELECT
                             auth.uid())) = id);
 
-ALTER TABLE public."_NutrientToProfile" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.tracked_nutrients ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view their tracked nutrients only." ON "_NutrientToProfile"
+CREATE POLICY "Users can view their tracked nutrients only." ON tracked_nutrients
     FOR SELECT TO authenticated
         USING ((
             SELECT
-                auth.uid()) = "_NutrientToProfile"."B");
+                auth.uid()) = tracked_nutrients.user_id);
 
-CREATE POLICY "Users can create their tracked nutrients only." ON "_NutrientToProfile"
+CREATE POLICY "Users can create their tracked nutrients only." ON tracked_nutrients
     FOR INSERT TO authenticated
         WITH CHECK ((
             SELECT
-                auth.uid()) = "_NutrientToProfile"."B");
+                auth.uid()) = tracked_nutrients.user_id);
 
-CREATE POLICY "Users can delete their tracked nutrients only." ON "_NutrientToProfile"
+CREATE POLICY "Users can delete their tracked nutrients only." ON tracked_nutrients
     FOR DELETE TO authenticated
         USING ((
             SELECT
-                auth.uid()) = "_NutrientToProfile"."B");
+                auth.uid()) = tracked_nutrients.user_id);
 
 ALTER TABLE public.foods ENABLE ROW LEVEL SECURITY;
 

@@ -1,3 +1,43 @@
+-- Clean up after profile deletion
+CREATE OR REPLACE FUNCTION public.handle_profile_delete()
+    RETURNS TRIGGER
+    SET search_path = public
+    AS $$
+BEGIN
+    DELETE FROM foods
+    WHERE owner_user_id = OLD.id
+        AND is_public = FALSE;
+    UPDATE
+        foods
+    SET
+        owner_user_id = NULL,
+        deleted_at = now()
+    WHERE
+        owner_user_id = OLD.id
+        AND is_public = TRUE;
+    DELETE FROM creations
+    WHERE owner_user_id = OLD.id
+        AND is_public = FALSE;
+    UPDATE
+        creations
+    SET
+        owner_user_id = NULL,
+        deleted_at = now()
+    WHERE
+        owner_user_id = OLD.id
+        AND is_public = TRUE;
+    RETURN old;
+END;
+$$
+LANGUAGE plpgsql
+SECURITY DEFINER;
+
+CREATE OR REPLACE TRIGGER on_profile_delete
+    AFTER DELETE ON profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION handle_profile_delete();
+
+-- Prevent updating certain columns
 CREATE OR REPLACE FUNCTION public.prevent_update_of_columns()
     RETURNS TRIGGER
     SET search_path = public
@@ -51,4 +91,31 @@ CREATE TRIGGER check_ingredient_update
     BEFORE UPDATE ON ingredients
     FOR EACH ROW
     EXECUTE FUNCTION prevent_update_of_columns('id', 'creation_id', 'serving_id', 'created_at');
+
+-- Ensure profiles reference auth users
+CREATE OR REPLACE FUNCTION public.profile_references_auth_user_check()
+    RETURNS TRIGGER
+    SET search_path = public
+    AS $$
+BEGIN
+    IF NOT EXISTS(
+        SELECT
+            1
+        FROM
+            auth.users
+        WHERE
+            id = NEW.id) THEN
+    RAISE EXCEPTION 'Error: id % does not exist in auth.users', NEW.id
+        USING ERRCODE = '23503';
+END IF;
+    RETURN new;
+END;
+$$
+LANGUAGE plpgsql
+SECURITY DEFINER;
+
+CREATE TRIGGER check_profile_references_auth_user
+    BEFORE INSERT ON profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION profile_references_auth_user_check();
 
