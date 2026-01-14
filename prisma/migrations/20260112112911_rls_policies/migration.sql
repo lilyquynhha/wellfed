@@ -74,7 +74,7 @@ CREATE POLICY "Users can delete their tracked nutrients only." ON tracked_nutrie
 ALTER TABLE public.foods ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view public foods or owned foods." ON foods
-    FOR SELECT TO authenticated
+    FOR SELECT TO authenticated, anon
         USING (is_public = TRUE
             OR (
                 SELECT
