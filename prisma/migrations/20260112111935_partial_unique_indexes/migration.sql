@@ -1,8 +1,8 @@
-CREATE UNIQUE INDEX unique_public_foods ON foods(name, type, brand_name)
+CREATE UNIQUE INDEX unique_public_foods ON foods(name, type, COALESCE(brand_name, ''))
 WHERE
     is_public = TRUE AND deleted_at IS NULL;
 
-CREATE UNIQUE INDEX unique_private_foods ON foods(owner_user_id, name, type, brand_name)
+CREATE UNIQUE INDEX unique_private_foods ON foods(owner_user_id, name, type, COALESCE(brand_name, ''))
 WHERE
     is_public = FALSE AND deleted_at IS NULL;
 
