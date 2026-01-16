@@ -1,5 +1,5 @@
 ALTER TABLE "public"."foods"
-    ADD CONSTRAINT "brand_food_has_brand_name_check" CHECK ((type = 'BRAND' AND brand_name IS NOT NULL) OR (type = 'GENERIC'));
+    ADD CONSTRAINT "brand_food_has_brand_name_check" CHECK ((type = 'BRAND' AND brand_name != '') OR (type = 'GENERIC' AND brand_name = ''));
 
 ALTER TABLE "public"."servings"
     ADD CONSTRAINT "positive_serving_size" CHECK (serving_size > 0);

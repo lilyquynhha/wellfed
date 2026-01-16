@@ -40,7 +40,7 @@ CREATE TABLE "foods" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "name" VARCHAR(100) NOT NULL,
     "type" "FoodType" NOT NULL,
-    "brand_name" VARCHAR(100),
+    "brand_name" VARCHAR(100) NOT NULL DEFAULT '',
     "owner_user_id" UUID,
     "is_public" BOOLEAN NOT NULL DEFAULT false,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
