@@ -574,13 +574,9 @@ export default function Page() {
           {insertState && showInsertError && (
             <div className="mt-4">
               {insertState.success ? (
-                <p className=" text-blue-500">
-                  Food added successfully.
-                </p>
+                <p className=" text-blue-500">Food added successfully.</p>
               ) : (
-                <p className=" text-red-500">
-                  {insertState.errorMessage}
-                </p>
+                <p className=" text-red-500">{insertState.errorMessage}</p>
               )}
             </div>
           )}
