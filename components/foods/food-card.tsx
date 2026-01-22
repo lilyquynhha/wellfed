@@ -13,6 +13,12 @@ import {
   SelectValue,
 } from "../ui/select";
 import { spFood, spServing } from "@/lib/supabase/database-types";
+import { Button } from "../ui/button";
+import { Star } from "lucide-react";
+import { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 export default function FoodCard({
   food,
@@ -22,17 +28,60 @@ export default function FoodCard({
   servings: spServing[];
 }) {
   const [selectedServingId, setSelectedServingId] = useState(servings[0].id);
-
   const [serving, setServing] = useState<spServing | undefined>(servings[0]);
+
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  const supabase = createClient();
 
   useEffect(() => {
     setServing(servings.find((s) => s.id == selectedServingId));
   }, [selectedServingId]);
 
+  useEffect(() => {
+    async function getUser() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      return user;
+    }
+    getUser().then(setUser);
+  }, []);
+
+  const handleFavouriteFood = async (f: spFood) => {
+    if (!user) {
+      router.push("/auth/sign-up");
+      return;
+    }
+
+    await supabase.from("favourite_foods").upsert({
+      user_id: user.id,
+      food_id: f.id,
+    });
+
+    toast.success("Food added to Favourite!", {
+      position: "top-center",
+    });
+  };
+
   return (
     <>
       {/* Header: Food name & Serving options */}
       <div className="px-5 pt-4 mb-4">
+        {food.is_public == true && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="float-right rounded-full hover:text-yellow-500"
+            onClick={() => {
+              handleFavouriteFood(food);
+            }}
+          >
+            <Star size={20} />
+          </Button>
+        )}
+
         <h2 className="text-2xl font-semibold">{food.name}</h2>
         {food.brand_name && (
           <p className="text-muted-foreground">{food.brand_name}</p>

@@ -1,5 +1,6 @@
 import SearchBar from "@/components/search-bar";
 import React, { Suspense } from "react";
+import { Toaster } from "sonner";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,6 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <h1 className="text-5xl mb-10">Search the public food database</h1>
       <SearchBar />
       <Suspense>{children}</Suspense>
+      <Toaster/>
     </div>
   );
 }

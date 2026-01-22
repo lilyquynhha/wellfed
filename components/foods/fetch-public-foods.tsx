@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import SearchResults from "./search-results";
 import { MAX_RESULTS } from "@/lib/data/fetch-foods";
+import { spFood } from "@/lib/supabase/database-types";
 
 export default async function FetchPublicFoods({
   foodQuery,
@@ -12,7 +13,7 @@ export default async function FetchPublicFoods({
   const supabase = await createClient();
 
   // Count total number of matched foods
-  const { data : count, error: countError } = await supabase.rpc(
+  const { data: count, error: countError } = await supabase.rpc(
     "count_foods_public",
     {
       query: foodQuery,
@@ -32,9 +33,19 @@ export default async function FetchPublicFoods({
   );
   if (selectError) return `Error fetching foods: ${selectError.message}`;
 
+  const foundPublicFoods = (foundFoods as spFood[]).map((f) => {
+    return {
+      ...f,
+      is_public: true,
+    };
+  });
   return (
     <>
-      <SearchResults foods={foundFoods} totalResults={count ?? 0} page={page} />
+      <SearchResults
+        foods={foundPublicFoods}
+        totalResults={count ?? 0}
+        page={page}
+      />
     </>
   );
 }
