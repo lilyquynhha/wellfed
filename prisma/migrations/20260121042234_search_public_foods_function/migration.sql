@@ -4,6 +4,7 @@ CREATE OR REPLACE FUNCTION search_foods_public(query text, limit_count int, offs
     name text,
     brand_name text,
     rank real)
+  SET search_path = public
   LANGUAGE sql
   STABLE
   AS $$
@@ -16,6 +17,7 @@ CREATE OR REPLACE FUNCTION search_foods_public(query text, limit_count int, offs
     foods
   WHERE
     is_public = TRUE
+    AND deleted_at IS NULL
     AND(search_vector @@ websearch_to_tsquery('simple', query)
       OR name ILIKE '%' || query || '%'
       OR brand_name ILIKE '%' || query || '%')
@@ -26,6 +28,7 @@ $$;
 
 CREATE OR REPLACE FUNCTION count_foods_public(query text)
   RETURNS int
+  SET search_path = public
   LANGUAGE sql
   STABLE
   AS $$
@@ -35,6 +38,7 @@ CREATE OR REPLACE FUNCTION count_foods_public(query text)
     foods
   WHERE
     is_public = TRUE
+    AND deleted_at IS NULL
     AND(search_vector @@ websearch_to_tsquery('simple', query)
       OR name ILIKE '%' || query || '%'
       OR brand_name ILIKE '%' || query || '%');
