@@ -6,6 +6,7 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { AuthButton } from "@/components/auth-button";
 import Link from "next/link";
 import { Suspense } from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -40,7 +41,8 @@ export default function RootLayout({
             <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
               <div className="flex gap-5 items-center font-semibold">
                 <Link href={"/"}>WellFed</Link>
-                <Link href={"/my-foods/create-food"}>Create a food</Link>
+                <Link href={"/my-foods/all"}>My Foods</Link>
+                <Link href={"/my-foods/create"}>Create a food</Link>
               </div>
 
               <Suspense>
@@ -49,11 +51,13 @@ export default function RootLayout({
             </div>
           </nav>
           {children}
+
           <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-8">
             <p>Copyright © 2026 WellFed</p>
             <ThemeSwitcher />
           </footer>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

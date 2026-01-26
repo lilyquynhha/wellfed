@@ -28,8 +28,8 @@ function GeneralFoodCardSkeleton() {
 
 export function NormalPreviewSkeleton() {
   return (
-    <div className="hidden md:block md:w-[50%] h-96 p-1 overflow-hidden">
-      <div className="h-full flex flex-col w-full gap-2">
+    <div className="hidden md:block md:w-[50%] h-[28rem] p-1 overflow-hidden">
+      <div className="h-full flex flex-col w-full border-2 rounded-2xl gap-2">
         <Skeleton className="h-5 w-1/2 mt-6 mx-6" />
 
         <Separator className="my-4" />
@@ -69,10 +69,10 @@ export function PopupPreviewSkeleton() {
 export function SearchResultsSkeleton() {
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-2">
+      <div className="flex flex-col md:flex-row gap-8">
         {/* Foods List skeleton */}
         <div className="w-full md:w-[50%] mb-3">
-          <div className="h-96 mb-14">
+          <div className="h-96 mb-6">
             <ScrollArea className="h-full">
               <GeneralFoodCardSkeleton />
               <GeneralFoodCardSkeleton />

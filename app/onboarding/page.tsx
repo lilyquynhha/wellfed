@@ -20,5 +20,5 @@ export default async function Page() {
     updated_at: new Date().toISOString(),
   });
 
-  redirect("/my-foods");
+  redirect("/my-foods/all");
 }

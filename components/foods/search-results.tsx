@@ -3,7 +3,7 @@
 import FoodsList from "./foods-list";
 import FoodPreview from "./food-preview";
 import { useState } from "react";
-import { MAX_RESULTS } from "@/lib/data/fetch-foods";
+import { MAX_RESULTS } from "@/lib/actions/food/food-crud";
 import { spFood } from "@/lib/supabase/database-types";
 
 export default function SearchResults({

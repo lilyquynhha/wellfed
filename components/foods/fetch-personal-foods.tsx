@@ -1,9 +1,8 @@
+import { MAX_RESULTS } from "@/lib/actions/food/food-crud";
 import { createClient } from "@/lib/supabase/server";
 import SearchResults from "./search-results";
-import { MAX_RESULTS } from "@/lib/actions/food/food-crud";
-import { spFood } from "@/lib/supabase/database-types";
 
-export default async function FetchPublicFoods({
+export default async function FetchPersonalFoods({
   foodQuery,
   page,
 }: {
@@ -11,21 +10,23 @@ export default async function FetchPublicFoods({
   page: number;
 }) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   // Count total number of matched foods
   const { data: count, error: countError } = await supabase.rpc(
-    "count_foods_public",
-    {
-      query: foodQuery,
-    },
+    "count_foods_personal",
+    { user_id: user?.id, query: foodQuery },
   );
 
   if (countError) return `Error fetching foods: ${countError.message}`;
 
   // Search for matched foods with pagination
   const { data: foundFoods, error: selectError } = await supabase.rpc(
-    "search_foods_public",
+    "search_foods_personal",
     {
+      user_id: user?.id,
       query: foodQuery,
       limit_count: MAX_RESULTS,
       offset_count: (page - 1) * MAX_RESULTS,
@@ -33,19 +34,9 @@ export default async function FetchPublicFoods({
   );
   if (selectError) return `Error fetching foods: ${selectError.message}`;
 
-  const foundPublicFoods = (foundFoods as spFood[]).map((f) => {
-    return {
-      ...f,
-      is_public: true,
-    };
-  });
   return (
     <>
-      <SearchResults
-        foods={foundPublicFoods}
-        totalResults={count ?? 0}
-        page={page}
-      />
+      <SearchResults foods={foundFoods} totalResults={count ?? 0} page={page} />
     </>
   );
 }
