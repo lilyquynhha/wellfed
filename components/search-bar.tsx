@@ -13,7 +13,6 @@ export default function SearchBar() {
   const router = useRouter();
 
   const handleSearch = () => {
-    if (!query.trim()) return;
     router.push(`${pathname}?query=${encodeURIComponent(query)}`);
   };
 
