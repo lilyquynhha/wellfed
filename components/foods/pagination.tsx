@@ -1,22 +1,18 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 
 export default function Pagination({
   page,
   totalPages,
+  onPageChange,
 }: {
   page: number;
   totalPages: number;
+  onPageChange: (page: number) => void;
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
   const goToPage = (p: number) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("page", String(p));
-    router.push(`?${params.toString()}`);
+    onPageChange(p);
   };
 
   return (

@@ -2,18 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-// Update URL's query parameter with user input
-export default function SearchBar() {
+export default function SearchBar({
+  setSearchQuery,
+}: {
+  setSearchQuery: (query: string) => void;
+}) {
   const [query, setQuery] = useState("");
-  const pathname = usePathname();
-  const router = useRouter();
 
   const handleSearch = () => {
-    router.push(`${pathname}?query=${encodeURIComponent(query)}`);
+    setSearchQuery(query);
   };
 
   return (

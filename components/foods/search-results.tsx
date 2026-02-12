@@ -12,10 +12,14 @@ export default function SearchResults({
   foods,
   totalResults,
   page,
+  setPage,
+  onSelectedFood,
 }: {
   foods: spFood[];
   totalResults: number;
   page: number;
+  setPage: (page: number) => void;
+  onSelectedFood: (food: spFood) => void;
 }) {
   const supabase = createClient();
   if (totalResults == 0) return <p>No food found.</p>;
@@ -27,19 +31,23 @@ export default function SearchResults({
 
   const totalPages = Math.ceil(totalResults / MAX_RESULTS);
 
-  // Fetch selected food
+  // Fetch selected food's servings
   useEffect(() => {
+    onSelectedFood(selectedFood);
+
     setSelectedServings([]);
 
     async function getServings() {
+      if (!selectedFood) return [];
+      
       setIsPending(true);
+
       const { data, error } = await supabase
         .from("servings")
         .select()
         .eq("owner_food_id", selectedFood.id);
 
       setIsPending(false);
-      console.log("done!");
 
       if (error || !data) {
         return [];
@@ -65,6 +73,7 @@ export default function SearchResults({
         <FoodsList
           foods={foods}
           currentPage={page}
+          setPage={setPage}
           totalPages={totalPages}
           onSelect={setSelectedFood}
         />

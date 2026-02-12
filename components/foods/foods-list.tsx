@@ -10,11 +10,13 @@ export default function FoodsList({
   foods,
   totalPages,
   currentPage,
+  setPage,
   onSelect,
 }: {
   foods: spFood[];
   totalPages: number;
   currentPage: number;
+  setPage: (page: number) => void;
   onSelect: (food: spFood) => void;
 }) {
   const [chosenFood, setChosenFood] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export default function FoodsList({
           </ScrollArea>
         </div>
 
-        <Pagination page={currentPage} totalPages={totalPages} />
+        <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage}/>
       </div>
     </>
   );
