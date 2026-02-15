@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "./scroll-area";
 import { Separator } from "./separator";
 import SearchBar from "../search-bar";
+import { Button } from "./button";
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -17,11 +18,10 @@ export { Skeleton };
 
 function GeneralFoodCardSkeleton() {
   return (
-    <div className="bg-card rounded-xl border p-4 mb-3 shadow-sm flex flex-col gap-2 h-20">
-      <Skeleton className="h-3 w-3/4" />
+    <div className="bg-card rounded-xl border p-4 mb-3 shadow-sm flex flex-col gap-2 h-14">
+      <Skeleton className="h-3 w-1/2" />
 
-      <Skeleton className="h-1.5 w-full" />
-      <Skeleton className="h-1.5 w-5/6" />
+      <Skeleton className="h-1.5 w-1/5" />
     </div>
   );
 }
@@ -82,6 +82,16 @@ export function SearchResultsSkeleton() {
               <GeneralFoodCardSkeleton />
               <GeneralFoodCardSkeleton />
             </ScrollArea>
+          </div>
+
+          <div className="flex items-center justify-center gap-2">
+            <div className="flex justify-center items-center h-9 w-16 border border-muted rounded-lg">
+              <Skeleton className="h-3 w-10" />
+            </div>
+            <Skeleton className="h-3 w-20" />
+            <div className="flex justify-center items-center h-9 w-16 border border-muted rounded-lg">
+              <Skeleton className="h-3 w-10" />
+            </div>
           </div>
         </div>
 

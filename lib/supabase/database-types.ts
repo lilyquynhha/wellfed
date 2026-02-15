@@ -5,8 +5,25 @@ export type spServing = Database["public"]["Tables"]["servings"]["Row"];
 
 export type spNewFood = Omit<
   spFood,
-  "id" | "is_public" | "owner_user_id" | "type" | "created_at" | "updated_at" | "deleted_at"
+  | "id"
+  | "is_public"
+  | "owner_user_id"
+  | "type"
+  | "created_at"
+  | "updated_at"
+  | "deleted_at"
 >;
 
-export type spNewServing = Omit<spServing, | "owner_food_id" | "created_at" | "updated_at">;
+export type spNewServing = Omit<
+  spServing,
+  "owner_food_id" | "created_at" | "updated_at"
+>;
 
+export type ServingFigures = Omit<
+  spNewServing,
+  | "id"
+  | "serving_size"
+  | "serving_unit"
+  | "display_serving_size"
+  | "display_serving_unit"
+>;

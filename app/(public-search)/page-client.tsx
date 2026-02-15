@@ -113,10 +113,6 @@ export default function PageClient() {
             >
               Favourite
             </Button>
-
-            <Button size="sm" variant="secondary">
-              Compare
-            </Button>
           </div>
         </>
       )}

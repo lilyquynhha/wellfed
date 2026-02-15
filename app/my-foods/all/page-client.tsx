@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SearchResultsSkeleton } from "@/components/ui/skeleton";
 import { MAX_RESULTS } from "@/lib/actions/food/food-crud";
 import { createClient } from "@/lib/supabase/client";
-import { spFood } from "@/lib/supabase/database-types";
+import { spFood, spServing } from "@/lib/supabase/database-types";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import FoodComparison from "@/components/foods/food-comparison";
 
 export default function PageClient() {
   const supabase = createClient();
@@ -32,6 +33,9 @@ export default function PageClient() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFood, setSelectedFood] = useState<spFood>();
   const [triggerSearch, setTriggerSearch] = useState(false); // a toggle
+
+  const [compareFoods, setCompareFoods] = useState<spFood[]>([]);
+  const [compareServings, setCompareServings] = useState<spServing[]>([]);
 
   const handleUnfavouriteFood = async (f: spFood) => {
     await supabase.from("favourite_foods").delete().eq("food_id", f.id);
@@ -47,6 +51,35 @@ export default function PageClient() {
     toast.success("Food deleted successfully", {
       position: "top-center",
     });
+  };
+
+  const addFoodToCompare = async (food: spFood) => {
+    if (compareFoods.find((f) => f.id === food.id)) return;
+    const updatedFoods = new Array(...compareFoods);
+    updatedFoods.push(food);
+
+    const { data } = await supabase
+      .from("servings")
+      .select()
+      .eq("owner_food_id", food.id);
+
+    const addedServings = data as spServing[];
+    const updatedServings = new Array(...compareServings);
+    updatedServings.push(...addedServings);
+
+    setCompareFoods(updatedFoods);
+    setCompareServings(updatedServings);
+  };
+
+  const removeFoodFromCompare = (food: spFood) => {
+    const updatedFoods = compareFoods.filter((f) => f.id != food.id);
+
+    const updatedServings = compareServings.filter(
+      (s) => s.owner_food_id != food.id,
+    );
+
+    setCompareFoods(updatedFoods);
+    setCompareServings(updatedServings);
   };
 
   useEffect(() => {
@@ -146,7 +179,13 @@ export default function PageClient() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            <Button size="sm" variant="secondary">
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                addFoodToCompare(selectedFood);
+              }}
+            >
               Compare
             </Button>
           </div>
@@ -165,6 +204,13 @@ export default function PageClient() {
           onSelectedFood={setSelectedFood}
         />
       )}
+
+      {/* Compare foods */}
+      <FoodComparison
+        foods={compareFoods}
+        servings={compareServings}
+        removeFood={removeFoodFromCompare}
+      />
     </>
   );
 }

@@ -21,7 +21,7 @@ export default function PopupPreview({
   return (
     <>
       {isPreviewOpen && food && (
-        <div className="md:hidden fixed w-80 h-96 right-4">
+        <div className="md:hidden fixed w-80 h-96 right-4 z-50">
           <div className="relative w-full h-full bg-background rounded-lg border-2 border-solid flex flex-col">
             <Button
               className="place-self-end px-2"

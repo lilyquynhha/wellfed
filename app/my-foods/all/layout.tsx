@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import React, { Suspense } from "react";
+import React from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,7 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </Button>
       </Link>
 
-      <Suspense>{children}</Suspense>
+      {children}
     </div>
   );
 }
