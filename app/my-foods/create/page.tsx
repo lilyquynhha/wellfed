@@ -19,7 +19,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 
 export default function Page() {
   const supabase = createClient();
@@ -76,9 +76,9 @@ export default function Page() {
       <h1 className="text-5xl mb-10">Create a food</h1>
       <Collapsible>
         <CollapsibleTrigger asChild>
-          <Button variant="ghost">
-            <ChevronsUpDown />
-            Add from Fatsecret API response
+          <Button variant="ghost" className="group ">
+            <ChevronRightIcon className="transition-transform group-data-[state=open]:rotate-90" />
+            Search ingredients
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent>

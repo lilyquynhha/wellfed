@@ -43,6 +43,8 @@ export default function RootLayout({
                 <Link href={"/"}>WellFed</Link>
                 <Link href={"/my-foods/all"}>My Foods</Link>
                 <Link href={"/my-foods/create"}>Create a food</Link>
+                <Link href={"/my-creations/all"}>My creations</Link>
+                <Link href={"/my-creations/create"}>Create a meal/recipe</Link>
               </div>
 
               <Suspense>

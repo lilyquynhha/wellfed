@@ -2,6 +2,8 @@ import { Database } from "./generated/types";
 
 export type spFood = Database["public"]["Tables"]["foods"]["Row"];
 export type spServing = Database["public"]["Tables"]["servings"]["Row"];
+export type spCreation = Database["public"]["Tables"]["creations"]["Row"];
+export type spIngr = Database["public"]["Tables"]["ingredients"]["Row"];
 
 export type spNewFood = Omit<
   spFood,
@@ -26,4 +28,9 @@ export type ServingFigures = Omit<
   | "serving_unit"
   | "display_serving_size"
   | "display_serving_unit"
+>;
+
+export type NewIngr = Omit<
+  spIngr,
+  "id" | "creation_id" | "created_at" | "updated_at"
 >;

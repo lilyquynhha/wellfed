@@ -6,8 +6,10 @@ import { useState } from "react";
 
 export default function SearchBar({
   setSearchQuery,
+  placeholder,
 }: {
   setSearchQuery: (query: string) => void;
+  placeholder?: string;
 }) {
   const [query, setQuery] = useState("");
 
@@ -20,7 +22,7 @@ export default function SearchBar({
       <div id="search-bar" className="flex w-full gap-2 mb-4">
         <Input
           type="text"
-          placeholder="Enter food name"
+          placeholder={placeholder}
           className="h-10"
           onChange={(e) => setQuery(e.target.value)}
         />

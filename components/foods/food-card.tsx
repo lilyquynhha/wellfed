@@ -12,21 +12,64 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { spFood, spServing } from "@/lib/supabase/database-types";
+import { NewIngr, spFood, spServing } from "@/lib/supabase/database-types";
+import { Field } from "../ui/field";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { displayNumber, resolveAmount } from "@/lib/actions/food/food-logic";
 
-export default function FoodCard({
+export function FoodCard({
   food,
   servings,
+  addIngr,
 }: {
   food: spFood;
   servings: spServing[];
+  addIngr?: (i: NewIngr) => void;
 }) {
   const [selectedServingId, setSelectedServingId] = useState(servings[0].id);
   const [serving, setServing] = useState<spServing | undefined>(servings[0]);
+  const [amount, setAmount] = useState(servings[0].display_serving_size);
+
+  type Message = {
+    success: boolean;
+    message: string;
+  };
+  const [message, setMessage] = useState<Message>({
+    success: false,
+    message: "",
+  });
+
+  const add = () => {
+    if (!addIngr) return;
+
+    if (amount > 0) {
+      addIngr({
+        amount: amount,
+        serving_id: selectedServingId,
+      });
+      setMessage({
+        success: true,
+        message: "Ingredient added successfully!",
+      });
+    } else {
+      setMessage({
+        success: false,
+        message: "Error: Amount must be positive.",
+      });
+    }
+  };
 
   useEffect(() => {
     setServing(servings.find((s) => s.id == selectedServingId));
   }, [selectedServingId]);
+
+  useEffect(() => {
+    setMessage({
+      success: false,
+      message: "",
+    });
+  }, [amount, selectedServingId]);
 
   return (
     <>
@@ -36,27 +79,54 @@ export default function FoodCard({
         {food.brand_name && (
           <p className="text-muted-foreground">{food.brand_name}</p>
         )}
-        <div className="flex items-center flex-wrap mt-3">
-          <p className="font-semibold mr-2">Serving size</p>
-          <Select
-            onValueChange={setSelectedServingId}
-            defaultValue={servings[0].id}
-          >
-            <SelectTrigger className="text-base">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Serving size</SelectLabel>
-                {servings.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {`${s.display_serving_size} ${s.display_serving_unit}`}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+        <div className="flex gap-2 items-center flex-wrap mt-3">
+          <Field className="basis-1/2 max-w-28">
+            <Input
+              placeholder="Enter amount"
+              type="number"
+              step="any"
+              value={amount}
+              onChange={(e) => {
+                setAmount(Number(e.target.value));
+              }}
+            />
+          </Field>
+          <div className="max-w-fit">
+            {" "}
+            <Select
+              onValueChange={setSelectedServingId}
+              defaultValue={servings[0].id}
+            >
+              <SelectTrigger className="text-base">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Serving size</SelectLabel>
+                  {servings.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {`${s.display_serving_unit}`}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          {addIngr && (
+            <div>
+              <Button variant="secondary" onClick={add}>
+                Submit
+              </Button>
+            </div>
+          )}
         </div>
+        {message.message && (
+          <p
+            className={`${message.success ? "text-green-500" : "text-red-500"} text-sm mt-1`}
+          >
+            {message.message}
+          </p>
+        )}
       </div>
 
       <Separator />
@@ -68,113 +138,275 @@ export default function FoodCard({
             <>
               <div className="flex justify-between items-end mt-2">
                 <p className="text-2xl font-extrabold">Calories</p>
-                <p className="text-5xl font-extrabold">{serving.calories}</p>
+                <p className="text-5xl font-extrabold">
+                  {displayNumber(
+                    resolveAmount(
+                      serving.calories,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                  )}
+                </p>
               </div>
 
               <div className="h-2 bg-primary mt-2 mb-3"></div>
 
               <div className="flex space-x-4">
                 <p className="font-extrabold">Total Fat</p>
-                <p>{`${serving.fat} g`}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.fat,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "g",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4 pl-4">
                 <p>Saturated Fat</p>
                 <p>
-                  {serving.saturated_fat ? `${serving.saturated_fat}g` : "-"}
+                  {displayNumber(
+                    resolveAmount(
+                      serving.saturated_fat,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "g",
+                  )}
                 </p>
               </div>
               <Separator />
               <div className="flex space-x-4 pl-4">
                 <p>Trans Fat</p>
-                <p>{serving.trans_fat ? `${serving.trans_fat}g` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.trans_fat,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "g",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4 pl-4">
                 <p>Polyunsaturated Fat</p>
                 <p>
-                  {serving.polyunsaturated_fat
-                    ? `${serving.polyunsaturated_fat}g`
-                    : "-"}
+                  {displayNumber(
+                    resolveAmount(
+                      serving.polyunsaturated_fat,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "g",
+                  )}
                 </p>
               </div>
               <Separator />
               <div className="flex space-x-4 pl-4">
                 <p>Monosaturated Fat</p>
                 <p>
-                  {serving.monounsaturated_fat
-                    ? `${serving.monounsaturated_fat}g`
-                    : "-"}
+                  {displayNumber(
+                    resolveAmount(
+                      serving.monounsaturated_fat,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "g",
+                  )}
                 </p>
               </div>
               <Separator />
               <div className="flex space-x-4">
                 <p className="font-extrabold">Cholesterol</p>
-                <p>{serving.cholesterol ? `${serving.cholesterol}mg` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.cholesterol,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "mg",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4">
                 <p className="font-extrabold">Sodium</p>
-                <p>{serving.sodium ? `${serving.sodium}mg` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.sodium,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "mg",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4">
                 <p className="font-extrabold">Total Carbohydrates</p>
-                <p>{`${serving.carbs}g`}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.carbs,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "g",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4 pl-4">
                 <p>Dietary Fiber</p>
-                <p>{serving.fiber ? `${serving.fiber}g` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.fiber,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "g",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4 pl-4">
                 <p>Sugars</p>
-                <p>{serving.sugar ? `${serving.sugar}g` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.sugar,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "g",
+                  )}
+                </p>
               </div>
               {serving.added_sugars && (
                 <div className="pl-10">
                   <Separator />
-                  <p>Includes {serving.added_sugars}g Added Sugars</p>
+                  <p>
+                    Includes
+                    {displayNumber(
+                      resolveAmount(
+                        serving.added_sugars,
+                        serving.display_serving_size,
+                        amount,
+                      ),
+                      "g",
+                    )}
+                    Added Sugars
+                  </p>
                 </div>
               )}
 
               <Separator />
               <div className="flex space-x-4">
                 <p className="font-extrabold">Protein</p>
-                <p>{`${serving.protein}g`}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.protein,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "g",
+                  )}
+                </p>
               </div>
 
               <div className="h-2 bg-primary mt-2 mb-3"></div>
 
               <div className="flex space-x-4">
                 <p>Vitamin D</p>
-                <p>{serving.vitamin_d ? `${serving.vitamin_d}mcg` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.vitamin_d,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "mcg",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4">
                 <p>Calcium</p>
-                <p>{serving.calcium ? `${serving.calcium}mg` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.calcium,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "mg",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4">
                 <p>Iron</p>
-                <p>{serving.iron ? `${serving.iron}mg` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.iron,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "mg",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4">
                 <p>Potassium</p>
-                <p>{serving.potassium ? `${serving.potassium}mg` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.potassium,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "mg",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4">
                 <p>Vitamin A</p>
-                <p>{serving.vitamin_a ? `${serving.vitamin_a}mcg` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.vitamin_a,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "mcg",
+                  )}
+                </p>
               </div>
               <Separator />
               <div className="flex space-x-4">
                 <p>Vitamin C</p>
-                <p>{serving.vitamin_c ? `${serving.vitamin_c}mg` : "-"}</p>
+                <p>
+                  {displayNumber(
+                    resolveAmount(
+                      serving.vitamin_c,
+                      serving.display_serving_size,
+                      amount,
+                    ),
+                    "mg",
+                  )}
+                </p>
               </div>
               <Separator />
             </>

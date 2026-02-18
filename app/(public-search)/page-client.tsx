@@ -1,9 +1,8 @@
 "use client";
 
-import SearchResults from "@/components/foods/search-results";
 import SearchBar from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
-import { SearchResultsSkeleton } from "@/components/ui/skeleton";
+import { FoodSearchResultSkeleton } from "@/components/ui/skeleton";
 import { MAX_RESULTS } from "@/lib/actions/food/food-crud";
 import { createClient } from "@/lib/supabase/client";
 import { spFood } from "@/lib/supabase/database-types";
@@ -11,6 +10,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { FoodSearchResult } from "@/components/search-utilities/search-results";
 
 export default function PageClient() {
   const router = useRouter();
@@ -97,16 +97,20 @@ export default function PageClient() {
 
   return (
     <>
-      <SearchBar setSearchQuery={setSearchQuery} />
+      <SearchBar
+        setSearchQuery={setSearchQuery}
+        placeholder="Enter food name"
+      />
       {!searchQuery && <p>Enter a food name to search.</p>}
 
       {/* Food actions */}
-      {searchQuery && !isLoading && totalResults > 0 && selectedFood && (
+      {searchQuery && totalResults > 0 && selectedFood && (
         <>
           <div className="flex gap-2 justify-end my-2">
             <Button
               size="sm"
               variant="secondary"
+              disabled={isLoading}
               onClick={() => {
                 handleFavouriteFood(selectedFood);
               }}
@@ -119,9 +123,9 @@ export default function PageClient() {
 
       {searchQuery &&
         (isLoading ? (
-          <SearchResultsSkeleton />
+          <FoodSearchResultSkeleton />
         ) : (
-          <SearchResults
+          <FoodSearchResult
             foods={foundFoods}
             totalResults={totalResults}
             page={page}
