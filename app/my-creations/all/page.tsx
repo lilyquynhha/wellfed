@@ -17,20 +17,7 @@ import {
 import { useEffect, useState } from "react";
 import { CreationSearchResultSkeletion } from "@/components/ui/skeleton";
 import { CreationView } from "@/components/creations/creation-view";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { CreationComparison } from "@/components/creations/creation-comparison";
 
 export default function Page() {
@@ -276,66 +263,25 @@ export default function Page() {
       </div>
 
       <div className="mt-6">
-        <h2 className="text-4xl font-medium mb-4">Creation details</h2>
-        {!selectedCreation && <p>Select a creation to view details.</p>}
-        {selectedCreation && !isLoading ? (
-          <>
-            <p>
-              {selectedCreation.type.charAt(0).toUpperCase() +
-                selectedCreation.type.slice(1).toLowerCase()}{" "}
-              name:{" "}
-              <span className="font-semibold">{selectedCreation.name}</span>
-            </p>
-            {/* Creation actions */}
-            <div className="flex justify-end gap-2 mb-2">
-              <Button variant="secondary" size="sm">
-                <Link href={`/my-creations/${selectedCreation.id}/edit`}>
-                  Edit
-                </Link>
-              </Button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button size="sm" variant="secondary">
-                    Delete
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete creation?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will permanently delete the creation.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      variant="destructive"
-                      onClick={() => {
-                        handleDelete();
-                      }}
-                    >
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              <Button variant="secondary" size="sm" onClick={addToCompare}>
-                Compare
-              </Button>
-            </div>
-            <CreationView
-              nutrients={nutrients}
-              trackedNutrients={trackedNutrients}
-              ingrs={selectedIngrs}
-            />
-          </>
+        <h2 className="text-4xl font-medium mb-4">View Creation</h2>
+        {!selectedCreation ? (
+          <p>Select a creation to view details.</p>
+        ) : !isLoading ? (
+          <CreationView
+            selectedCreation={selectedCreation}
+            nutrients={nutrients}
+            trackedNutrients={trackedNutrients}
+            ingrs={selectedIngrs}
+            handleDelete={handleDelete}
+            addToCompare={addToCompare}
+          />
         ) : (
           <p>Loading creation details...</p>
         )}
       </div>
 
       <div className="mt-6">
-        <h2 className="text-4xl font-medium mb-4">Compare creations</h2>
+        <h2 className="text-4xl font-medium mb-4">Compare Creations</h2>
         {compareCreations.length > 0 ? (
           <CreationComparison
             nutrients={nutrients}

@@ -1,3 +1,5 @@
+"use client";
+
 import { Ingr } from "@/lib/actions/creation/creation-crud";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import {
@@ -9,6 +11,9 @@ import {
 import { displayNumber, resolveAmount } from "@/lib/actions/food/food-logic";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
+import { Field } from "../ui/field";
+import { Input } from "../ui/input";
+import { useEffect, useState } from "react";
 
 export function CreationComparison({
   nutrients,
@@ -23,19 +28,38 @@ export function CreationComparison({
   ingrs: Ingr[];
   removeCreation: (c: spCreation) => void;
 }) {
-  const calcAmount = (i: Ingr, figure: keyof spServing) => {
-    return resolveAmount(
-      i.serving[figure] as number,
-      i.serving.display_serving_size,
-      i.amount,
-    );
-  };
+  const [servingSizes, setServingSizes] = useState<
+    {
+      creationId: string;
+      servingSize: number;
+    }[]
+  >([]);
 
-  const calcTotal = (creation: spCreation, figure: keyof spServing) => {
+  useEffect(() => {
+    const updated = [...servingSizes];
+    creations.map((c) => {
+      if (!updated.find((s) => s.creationId == c.id)) {
+        updated.push({
+          creationId: c.id,
+          servingSize: 1,
+        });
+      }
+      setServingSizes(updated);
+    });
+  }, [creations]);
+
+  const calc = (creation: spCreation, figure: keyof spServing) => {
     let total = 0;
     const creationIngrs = ingrs.filter((i) => i.creationId == creation.id);
     creationIngrs.forEach((i) => {
-      total += calcAmount(i, figure) ?? 0;
+      total +=
+        resolveAmount(
+          i.serving[figure] as number,
+          i.serving.display_serving_size,
+          i.amount *
+            (servingSizes.find((s) => s.creationId == creation.id)
+              ?.servingSize as number),
+        ) ?? 0;
     });
     return total;
   };
@@ -47,6 +71,7 @@ export function CreationComparison({
             <div className="sticky top-0 border-b-2 border-foreground">
               <div className="flex gap-2 p-2 font-semibold">
                 <p className="w-48 break-words">Creation</p>
+                <p className="w-28 break-words">Serving size</p>
                 <p className="w-24 break-words">Cost</p>
                 {nutrients.map((n) => (
                   <p
@@ -62,7 +87,7 @@ export function CreationComparison({
         </div>
         {creations.map((c) => (
           <div key={`${c.id}`}>
-            <div className="flex mb-4 gap-2 pl-2">
+            <div className="flex items-center mb-4 gap-2 pl-2">
               <div className="sticky left-0 w-48 bg-background">
                 <Button
                   size="icon"
@@ -76,8 +101,32 @@ export function CreationComparison({
                 </Button>
                 <p className="font-medium">{c.name}</p>
               </div>
+              <div className="w-28">
+                <Field>
+                  <Input
+                    value={
+                      servingSizes.find((s) => s.creationId == c.id)
+                        ?.servingSize ?? 1
+                    }
+                    onChange={(e) =>
+                      setServingSizes((prev) =>
+                        prev.map((s) =>
+                          s.creationId == c.id
+                            ? {
+                                ...s,
+                                servingSize: Number(e.target.value),
+                              }
+                            : s,
+                        ),
+                      )
+                    }
+                    type="number"
+                    step="any"
+                  />
+                </Field>
+              </div>
               <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "cost"))}</p>
+                <p>{displayNumber(calc(c, "cost"))}</p>
               </div>
               {nutrients.map((n) => (
                 <div key={`${n.id}-total`} className="w-24">
@@ -85,7 +134,7 @@ export function CreationComparison({
                     className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
                   >
                     {displayNumber(
-                      calcTotal(c, n.serving_name as keyof spServing),
+                      calc(c, n.serving_name as keyof spServing),
                       n.unit,
                     )}
                   </p>

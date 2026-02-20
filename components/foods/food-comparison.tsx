@@ -275,7 +275,7 @@ export default function FoodComparison({
           {foods.length > 1 && commonServings.length > 0 && (
             <div className="flex space-x-2 mb-3">
               <Field className="w-28">
-                <Input id="same-amount" />
+                <Input id="same-amount" type="number" step="any" />
               </Field>
               <Select
                 key={commonServings.length}
