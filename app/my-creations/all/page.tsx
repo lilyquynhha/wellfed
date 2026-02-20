@@ -10,7 +10,9 @@ import {
   spCreation,
   spFood,
   spIngr,
+  spNutrient,
   spServing,
+  spTrackedNutrient,
 } from "@/lib/supabase/database-types";
 import { useEffect, useState } from "react";
 import { CreationSearchResultSkeletion } from "@/components/ui/skeleton";
@@ -34,6 +36,11 @@ import { CreationComparison } from "@/components/creations/creation-comparison";
 export default function Page() {
   const supabase = createClient();
 
+  const [nutrients, setNutrients] = useState<spNutrient[]>([]);
+  const [trackedNutrients, setTrackedNutrients] = useState<spTrackedNutrient[]>(
+    [],
+  );
+
   // Creation search states
   const [creationName, setCreationName] = useState("");
   const [creationType, setCreationType] = useState("");
@@ -45,6 +52,7 @@ export default function Page() {
 
   const [selectedCreation, setSelectedCreation] = useState<spCreation>();
   const [selectedIngrs, setSelectedIngrs] = useState<Ingr[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [compareCreations, setCompareCreations] = useState<spCreation[]>([]);
   const [compareIngrs, setCompareIngrs] = useState<Ingr[]>([]);
@@ -83,6 +91,47 @@ export default function Page() {
     setCompareCreations(updatedCreations);
     setCompareIngrs(updatedIngrs);
   };
+
+  // Fetch tracked nutrients
+  useEffect(() => {
+    async function fetchNutrients() {
+      const { data } = await supabase.from("nutrients").select();
+      return data as spNutrient[];
+    }
+
+    async function fetchTrackedNutrients() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const { data } = await supabase
+        .from("tracked_nutrients")
+        .select()
+        .eq("user_id", user?.id);
+
+      return data as spTrackedNutrient[];
+    }
+
+    const fetchData = async () => {
+      const nutrientsData = await fetchNutrients();
+
+      const trackedData = await fetchTrackedNutrients();
+      setTrackedNutrients(trackedData);
+
+      nutrientsData.sort((a, b) => {
+        const aPoint = trackedData.find((t) => t.nutrient_id == a.id)
+          ? a.display_order
+          : nutrientsData.length + a.display_order;
+        const bPoint = trackedData.find((t) => t.nutrient_id == b.id)
+          ? b.display_order
+          : nutrientsData.length + b.display_order;
+        return aPoint - bPoint;
+      });
+      setNutrients(nutrientsData);
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     setPage(1);
@@ -132,7 +181,7 @@ export default function Page() {
   // Fetch selected creation
   useEffect(() => {
     if (!selectedCreation) return;
-    setSelectedIngrs([]);
+    setIsLoading(true);
 
     async function fetchIngrs() {
       const { data } = await supabase
@@ -180,6 +229,7 @@ export default function Page() {
       );
 
       setSelectedIngrs(updatedIngrs);
+      setIsLoading(false);
     });
   }, [selectedCreation]);
 
@@ -227,7 +277,8 @@ export default function Page() {
 
       <div className="mt-6">
         <h2 className="text-4xl font-medium mb-4">Creation details</h2>
-        {selectedCreation ? (
+        {!selectedCreation && <p>Select a creation to view details.</p>}
+        {selectedCreation && !isLoading ? (
           <>
             <p>
               {selectedCreation.type.charAt(0).toUpperCase() +
@@ -272,10 +323,14 @@ export default function Page() {
                 Compare
               </Button>
             </div>
-            <CreationView ingrs={selectedIngrs} />
+            <CreationView
+              nutrients={nutrients}
+              trackedNutrients={trackedNutrients}
+              ingrs={selectedIngrs}
+            />
           </>
         ) : (
-          <p>Select a creation to view details.</p>
+          <p>Loading creation details...</p>
         )}
       </div>
 
@@ -283,6 +338,8 @@ export default function Page() {
         <h2 className="text-4xl font-medium mb-4">Compare creations</h2>
         {compareCreations.length > 0 ? (
           <CreationComparison
+            nutrients={nutrients}
+            trackedNutrients={trackedNutrients}
             creations={compareCreations}
             ingrs={compareIngrs}
             removeCreation={removeFromCompare}

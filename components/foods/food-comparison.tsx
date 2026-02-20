@@ -1,7 +1,9 @@
 import {
   ServingFigures,
   spFood,
+  spNutrient,
   spServing,
+  spTrackedNutrient,
 } from "@/lib/supabase/database-types";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Field } from "../ui/field";
@@ -21,10 +23,14 @@ import { useEffect, useState } from "react";
 import { displayNumber, resolveAmount } from "@/lib/actions/food/food-logic";
 
 export default function FoodComparison({
+  nutrients,
+  trackedNutrients,
   foods,
   servings,
   removeFood,
 }: {
+  nutrients: spNutrient[];
+  trackedNutrients: spTrackedNutrient[];
   foods: spFood[];
   servings: spServing[];
   removeFood: (food: spFood) => void;
@@ -310,63 +316,19 @@ export default function FoodComparison({
                     <div className="border-b-2 bg-background">
                       <p className="px-2 font-semibold">Cost</p>
                     </div>
-                    <div className="border-b-2 bg-muted">
-                      <p className="px-2 font-semibold">Calories</p>
-                    </div>
-                    <div className="border-b-2 bg-background">
-                      <p className="px-2 font-semibold">Carbs</p>
-                    </div>
-                    <div className="border-b-2 bg-muted">
-                      <p className="px-2 font-semibold">Protein</p>
-                    </div>
-                    <div className="border-b-2 bg-background">
-                      <p className="px-2 font-semibold">Fat</p>
-                    </div>
-                    <div className="border-b-2 bg-muted">
-                      <p className="px-2 font-semibold">Saturated Fat</p>
-                    </div>
-                    <div className="border-b-2 bg-background">
-                      <p className="px-2 font-semibold">Polyunsaturated Fat</p>
-                    </div>
-                    <div className="border-b-2 bg-muted">
-                      <p className="px-2 font-semibold">Monounsaturated Fat</p>
-                    </div>
-                    <div className="border-b-2 bg-background">
-                      <p className="px-2 font-semibold">Trans Fat</p>
-                    </div>
-                    <div className="border-b-2 bg-muted">
-                      <p className="px-2 font-semibold">Fiber</p>
-                    </div>
-                    <div className="border-b-2 bg-background">
-                      <p className="px-2 font-semibold">Sugar</p>
-                    </div>
-                    <div className="border-b-2 bg-muted">
-                      <p className="px-2 font-semibold">Sodium</p>
-                    </div>
-                    <div className="border-b-2 bg-background">
-                      <p className="px-2 font-semibold">Cholesterol</p>
-                    </div>
-                    <div className="border-b-2 bg-muted">
-                      <p className="px-2 font-semibold">Potassium</p>
-                    </div>
-                    <div className="border-b-2 bg-background">
-                      <p className="px-2 font-semibold">Vitamin A</p>
-                    </div>
-                    <div className="border-b-2 bg-muted">
-                      <p className="px-2 font-semibold">Vitamin C</p>
-                    </div>
-                    <div className="border-b-2 bg-background">
-                      <p className="px-2 font-semibold">Vitamin D</p>
-                    </div>
-                    <div className="border-b-2 bg-muted">
-                      <p className="px-2 font-semibold">Calcium</p>
-                    </div>
-                    <div className="border-b-2 bg-background">
-                      <p className="px-2 font-semibold">Iron</p>
-                    </div>
-                    <div className="border-b-2 bg-muted">
-                      <p className="px-2 font-semibold">Added Sugars</p>
-                    </div>
+
+                    {nutrients.map((n, i) => (
+                      <div
+                        key={`${n.id}-name`}
+                        className={`border-b-2 ${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
+                      >
+                        <p
+                          className={`px-2 font-semibold ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                        >
+                          {n.name}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -460,99 +422,16 @@ export default function FoodComparison({
                         <div className="border-b-2 border-muted">
                           <p className="px-2">{`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.cost)}`}</p>
                         </div>
-                        <div className="border-b-2 border-muted bg-muted">
-                          <p className="px-2">{`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.calories)}`}</p>
-                        </div>
-                        <div className="border-b-2 border-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.carbs)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted bg-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.protein)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.fat)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted bg-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.saturated_fat)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.polyunsaturated_fat)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted bg-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.monounsaturated_fat)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.trans_fat)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted bg-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.fiber)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.sugar)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted bg-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.sodium)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.cholesterol)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted bg-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.potassium)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.vitamin_a)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted bg-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.vitamin_c)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.vitamin_d)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted bg-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.calcium)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.iron)}`}
-                          </p>
-                        </div>
-                        <div className="border-b-2 border-muted bg-muted">
-                          <p className="px-2">
-                            {`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.added_sugars)}`}
-                          </p>
-                        </div>
+                        {nutrients.map((n, i) => (
+                          <div
+                            key={`${n.id}-value`}
+                            className={`border-b-2 ${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
+                          >
+                            <p
+                              className={`px-2 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                            >{`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures[n.serving_name as keyof ServingFigures])}`}</p>
+                          </div>
+                        ))}
                       </div>
                     );
                   })}

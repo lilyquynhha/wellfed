@@ -25,8 +25,11 @@ model Profile {
 }
 
 model Nutrient {
-  id   String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String @unique @map("name") @db.VarChar(100)
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String @unique @map("name") @db.VarChar(100)
+  servingName  String @unique @map("serving_name") @db.VarChar(100)
+  displayOrder Int    @unique @map("display_order")
+  unit         String @map("unit") @db.VarChar(50)
 
   trackedNutrients TrackedNutrient[]
 

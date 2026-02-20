@@ -1,15 +1,24 @@
 import { Ingr } from "@/lib/actions/creation/creation-crud";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
-import { spCreation, spServing } from "@/lib/supabase/database-types";
+import {
+  spCreation,
+  spNutrient,
+  spServing,
+  spTrackedNutrient,
+} from "@/lib/supabase/database-types";
 import { displayNumber, resolveAmount } from "@/lib/actions/food/food-logic";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
 
 export function CreationComparison({
+  nutrients,
+  trackedNutrients,
   creations,
   ingrs,
   removeCreation,
 }: {
+  nutrients: spNutrient[];
+  trackedNutrients: spTrackedNutrient[];
   creations: spCreation[];
   ingrs: Ingr[];
   removeCreation: (c: spCreation) => void;
@@ -39,25 +48,14 @@ export function CreationComparison({
               <div className="flex gap-2 p-2 font-semibold">
                 <p className="w-48 break-words">Creation</p>
                 <p className="w-24 break-words">Cost</p>
-                <p className="w-24 break-words">Calories</p>
-                <p className="w-24 break-words">Carbs</p>
-                <p className="w-24 break-words">Protein</p>
-                <p className="w-24 break-words">Fat</p>
-                <p className="w-24 break-words">Saturated Fat</p>
-                <p className="w-24 break-words">Polyunsaturated Fat</p>
-                <p className="w-24 break-words">Monounsaturated Fat</p>
-                <p className="w-24 break-words">Trans Fat</p>
-                <p className="w-24 break-words">Fiber</p>
-                <p className="w-24 break-words">Sugar</p>
-                <p className="w-24 break-words">Sodium</p>
-                <p className="w-24 break-words">Cholesterol</p>
-                <p className="w-24 break-words">Potassium</p>
-                <p className="w-24 break-words">Vitamin A</p>
-                <p className="w-24 break-words">Vitamin C</p>
-                <p className="w-24 break-words">Vitamin D</p>
-                <p className="w-24 break-words">Calcium</p>
-                <p className="w-24 break-words">Iron</p>
-                <p className="w-24 break-words">Added Sugars</p>
+                {nutrients.map((n) => (
+                  <p
+                    key={`${n.id}-name`}
+                    className={`w-24 break-words ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                  >
+                    {n.name}
+                  </p>
+                ))}
               </div>
             </div>
           </div>
@@ -81,63 +79,18 @@ export function CreationComparison({
               <div className="w-24">
                 <p>{displayNumber(calcTotal(c, "cost"))}</p>
               </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "calories"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "carbs"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "protein"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "fat"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "saturated_fat"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "polyunsaturated_fat"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "monounsaturated_fat"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "trans_fat"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "fiber"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "sugar"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "sodium"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "cholesterol"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "potassium"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "vitamin_a"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "vitamin_c"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "vitamin_d"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "calcium"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "iron"))}</p>
-              </div>
-              <div className="w-24">
-                <p>{displayNumber(calcTotal(c, "added_sugars"))}</p>
-              </div>
+              {nutrients.map((n) => (
+                <div key={`${n.id}-total`} className="w-24">
+                  <p
+                    className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                  >
+                    {displayNumber(
+                      calcTotal(c, n.serving_name as keyof spServing),
+                      n.unit,
+                    )}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         ))}

@@ -3,7 +3,9 @@ export const resolveAmount = (
   servingSize: number,
   amount: number,
 ) => {
-  return servingFigure ? (servingFigure * amount) / servingSize : null;
+  return typeof servingFigure === "number"
+    ? (servingFigure * amount) / servingSize
+    : null;
 };
 
 export const displayNumber = (n: number | null | undefined, unit?: string) => {

@@ -6,7 +6,12 @@ import { Button } from "@/components/ui/button";
 import { FoodSearchResultSkeleton } from "@/components/ui/skeleton";
 import { MAX_RESULTS } from "@/lib/actions/food/food-crud";
 import { createClient } from "@/lib/supabase/client";
-import { spFood, spServing } from "@/lib/supabase/database-types";
+import {
+  spFood,
+  spNutrient,
+  spServing,
+  spTrackedNutrient,
+} from "@/lib/supabase/database-types";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -25,6 +30,11 @@ import FoodComparison from "@/components/foods/food-comparison";
 
 export default function Page() {
   const supabase = createClient();
+
+  const [nutrients, setNutrients] = useState<spNutrient[]>([]);
+  const [trackedNutrients, setTrackedNutrients] = useState<spTrackedNutrient[]>(
+    [],
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -81,6 +91,47 @@ export default function Page() {
     setCompareFoods(updatedFoods);
     setCompareServings(updatedServings);
   };
+
+  // Fetch tracked nutrients
+  useEffect(() => {
+    async function fetchNutrients() {
+      const { data } = await supabase.from("nutrients").select();
+      return data as spNutrient[];
+    }
+
+    async function fetchTrackedNutrients() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const { data } = await supabase
+        .from("tracked_nutrients")
+        .select()
+        .eq("user_id", user?.id);
+
+      return data as spTrackedNutrient[];
+    }
+
+    const fetchData = async () => {
+      const nutrientsData = await fetchNutrients();
+
+      const trackedData = await fetchTrackedNutrients();
+      setTrackedNutrients(trackedData);
+
+      nutrientsData.sort((a, b) => {
+        const aPoint = trackedData.find((t) => t.nutrient_id == a.id)
+          ? a.display_order
+          : nutrientsData.length + a.display_order;
+        const bPoint = trackedData.find((t) => t.nutrient_id == b.id)
+          ? b.display_order
+          : nutrientsData.length + b.display_order;
+        return aPoint - bPoint;
+      });
+      setNutrients(nutrientsData);
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     setPage(1);
@@ -211,6 +262,8 @@ export default function Page() {
 
       {/* Compare foods */}
       <FoodComparison
+        nutrients={nutrients}
+        trackedNutrients={trackedNutrients}
         foods={compareFoods}
         servings={compareServings}
         removeFood={removeFoodFromCompare}

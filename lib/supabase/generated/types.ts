@@ -80,6 +80,7 @@ export type Database = {
           is_public: boolean
           name: string
           owner_user_id: string | null
+          search_vector: unknown
           type: Database["public"]["Enums"]["CreationType"]
           updated_at: string
         }
@@ -90,6 +91,7 @@ export type Database = {
           is_public?: boolean
           name: string
           owner_user_id?: string | null
+          search_vector?: unknown
           type: Database["public"]["Enums"]["CreationType"]
           updated_at: string
         }
@@ -100,6 +102,7 @@ export type Database = {
           is_public?: boolean
           name?: string
           owner_user_id?: string | null
+          search_vector?: unknown
           type?: Database["public"]["Enums"]["CreationType"]
           updated_at?: string
         }
@@ -155,6 +158,7 @@ export type Database = {
           is_public: boolean
           name: string
           owner_user_id: string | null
+          search_vector: unknown
           type: Database["public"]["Enums"]["FoodType"]
           updated_at: string
         }
@@ -166,6 +170,7 @@ export type Database = {
           is_public?: boolean
           name: string
           owner_user_id?: string | null
+          search_vector?: unknown
           type: Database["public"]["Enums"]["FoodType"]
           updated_at: string
         }
@@ -177,6 +182,7 @@ export type Database = {
           is_public?: boolean
           name?: string
           owner_user_id?: string | null
+          search_vector?: unknown
           type?: Database["public"]["Enums"]["FoodType"]
           updated_at?: string
         }
@@ -234,16 +240,25 @@ export type Database = {
       }
       nutrients: {
         Row: {
+          display_order: number
           id: string
           name: string
+          serving_name: string
+          unit: string
         }
         Insert: {
+          display_order: number
           id?: string
           name: string
+          serving_name: string
+          unit: string
         }
         Update: {
+          display_order?: number
           id?: string
           name?: string
+          serving_name?: string
+          unit?: string
         }
         Relationships: []
       }
@@ -452,7 +467,76 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      count_creations: {
+        Args: { creation_name: string; creation_type: string; user_id: string }
+        Returns: number
+      }
+      count_foods_general: {
+        Args: { query: string; user_id: string }
+        Returns: number
+      }
+      count_foods_personal: {
+        Args: { query: string; user_id: string }
+        Returns: number
+      }
+      count_foods_public: { Args: { query: string }; Returns: number }
       is_admin: { Args: never; Returns: boolean }
+      search_creations: {
+        Args: {
+          creation_name: string
+          creation_type: string
+          limit_count: number
+          offset_count: number
+          user_id: string
+        }
+        Returns: {
+          id: string
+          name: string
+          rank: number
+          type: string
+        }[]
+      }
+      search_foods_general: {
+        Args: {
+          limit_count: number
+          offset_count: number
+          query: string
+          user_id: string
+        }
+        Returns: {
+          brand_name: string
+          id: string
+          is_public: boolean
+          name: string
+          owner_user_id: string
+          rank: number
+        }[]
+      }
+      search_foods_personal: {
+        Args: {
+          limit_count: number
+          offset_count: number
+          query: string
+          user_id: string
+        }
+        Returns: {
+          brand_name: string
+          id: string
+          is_public: boolean
+          name: string
+          owner_user_id: string
+          rank: number
+        }[]
+      }
+      search_foods_public: {
+        Args: { limit_count: number; offset_count: number; query: string }
+        Returns: {
+          brand_name: string
+          id: string
+          name: string
+          rank: number
+        }[]
+      }
     }
     Enums: {
       CreationType: "MEAL" | "RECIPE"
