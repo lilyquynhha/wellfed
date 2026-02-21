@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import OnboardingForm from "@/components/nutrients/onboarding-form";
+import { fetchNutrients } from "@/lib/actions/nutrient/nutrient-crud";
+import { insertProfile } from "@/lib/actions/profile/profile-crud";
 
 export default async function Page() {
   const supabase = await createClient();
@@ -13,12 +15,9 @@ export default async function Page() {
     redirect("/auth/login");
   }
 
-  await supabaseAdmin.from("profiles").upsert({
-    id: user.id,
-    username: user.email,
-    is_admin: false,
-    updated_at: new Date().toISOString(),
-  });
+  await insertProfile(user);
 
-  redirect("/my-foods/all");
+  const nutrients = await fetchNutrients(supabase);
+
+  return <OnboardingForm nutrients={nutrients} />;
 }

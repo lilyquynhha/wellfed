@@ -19,6 +19,10 @@ import { CreationSearchResultSkeletion } from "@/components/ui/skeleton";
 import { CreationView } from "@/components/creations/creation-view";
 import { toast } from "sonner";
 import { CreationComparison } from "@/components/creations/creation-comparison";
+import {
+  fetchNutrients,
+  fetchTrackedNutrients,
+} from "@/lib/actions/nutrient/nutrient-crud";
 
 export default function Page() {
   const supabase = createClient();
@@ -81,28 +85,10 @@ export default function Page() {
 
   // Fetch tracked nutrients
   useEffect(() => {
-    async function fetchNutrients() {
-      const { data } = await supabase.from("nutrients").select();
-      return data as spNutrient[];
-    }
-
-    async function fetchTrackedNutrients() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const { data } = await supabase
-        .from("tracked_nutrients")
-        .select()
-        .eq("user_id", user?.id);
-
-      return data as spTrackedNutrient[];
-    }
-
     const fetchData = async () => {
-      const nutrientsData = await fetchNutrients();
+      const nutrientsData = await fetchNutrients(supabase);
 
-      const trackedData = await fetchTrackedNutrients();
+      const trackedData = await fetchTrackedNutrients(supabase);
       setTrackedNutrients(trackedData);
 
       nutrientsData.sort((a, b) => {
