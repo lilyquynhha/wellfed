@@ -17,6 +17,7 @@ import { Field } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { displayNumber, resolveAmount } from "@/lib/actions/food/food-logic";
+import { FoodChart } from "./food-chart";
 
 export function FoodCard({
   food,
@@ -136,20 +137,30 @@ export function FoodCard({
         <div>
           {serving && (
             <>
-              <div className="flex justify-between items-end mt-2">
-                <p className="text-2xl font-extrabold">Calories</p>
-                <p className="text-5xl font-extrabold">
-                  {displayNumber(
-                    resolveAmount(
-                      serving.calories,
-                      serving.display_serving_size,
-                      amount,
-                    ),
-                  )}
-                </p>
-              </div>
-
-              <div className="h-2 bg-primary mt-2 mb-3"></div>
+              <FoodChart
+                macros={{
+                  calories: resolveAmount(
+                    serving.calories,
+                    serving.display_serving_size,
+                    amount,
+                  ) as number,
+                  carbs: resolveAmount(
+                    serving.carbs,
+                    serving.display_serving_size,
+                    amount,
+                  ) as number,
+                  protein: resolveAmount(
+                    serving.protein,
+                    serving.display_serving_size,
+                    amount,
+                  ) as number,
+                  fat: resolveAmount(
+                    serving.fat,
+                    serving.display_serving_size,
+                    amount,
+                  ) as number,
+                }}
+              />
 
               <div className="flex space-x-4">
                 <p className="font-extrabold">Total Fat</p>
