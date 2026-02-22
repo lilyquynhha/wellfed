@@ -13,7 +13,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useActionState, useEffect, useState } from "react";
-import { spNutrient } from "@/lib/supabase/database-types";
+import {
+  spNutrient,
+  spProfile,
+  spTrackedNutrient,
+} from "@/lib/supabase/database-types";
 import { Input } from "../ui/input";
 import { isUsernameUnique } from "@/lib/actions/profile/profile-crud";
 import { User } from "@supabase/supabase-js";
@@ -22,8 +26,12 @@ import { insertOnboardingInfo } from "@/lib/actions/onboarding";
 
 export default function OnboardingForm({
   nutrients,
+  profile,
+  trackedNutrients,
 }: {
   nutrients: spNutrient[];
+  profile?: spProfile;
+  trackedNutrients?: spTrackedNutrient[];
 }) {
   const supabase = createClient();
 
@@ -33,7 +41,7 @@ export default function OnboardingForm({
   };
 
   const [username, setUsername] = useState<UsernameState>({
-    username: "",
+    username: profile?.username ?? "",
     isUnique: false,
   });
   const [isValidating, setIsValidating] = useState(false);
@@ -80,6 +88,7 @@ export default function OnboardingForm({
           <Field className="flex flex-row flex-wrap items-center mb-2">
             <FieldLabel className="max-w-fit">Username:</FieldLabel>
             <Input
+              // defaultValue={profile?.username}
               value={username.username}
               onChange={(e) =>
                 setUsername((prev) => ({ ...prev, username: e.target.value }))
@@ -121,7 +130,8 @@ export default function OnboardingForm({
                       n.serving_name == "calories" ||
                       n.serving_name == "carbs" ||
                       n.serving_name == "protein" ||
-                      n.serving_name == "fat"
+                      n.serving_name == "fat" ||
+                      trackedNutrients?.find((tn) => tn.nutrient_id == n.id)
                         ? true
                         : false
                     }

@@ -45,6 +45,7 @@ export default function RootLayout({
                 <Link href={"/my-foods/create"}>Create a food</Link>
                 <Link href={"/my-creations/all"}>My creations</Link>
                 <Link href={"/my-creations/create"}>Create a meal/recipe</Link>
+                <Link href={"/settings"}>Settings</Link>
               </div>
 
               <Suspense>
