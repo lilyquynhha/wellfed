@@ -31,11 +31,19 @@ export default function Page() {
       return;
     }
 
-    await supabase.from("favourite_foods").upsert({
-      user_id: user.id,
-      food_id: f.id,
-    });
+    const { data } = await supabase
+      .from("favourite_foods")
+      .select()
+      .eq("user_id", user.id)
+      .eq("food_id", f.id)
+      .maybeSingle();
 
+    if (!data) {
+      await supabase.from("favourite_foods").upsert({
+        user_id: user.id,
+        food_id: f.id,
+      });
+    }
     toast.success("Food added to Favourite!", {
       position: "top-center",
     });

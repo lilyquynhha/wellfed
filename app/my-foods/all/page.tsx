@@ -72,9 +72,10 @@ export default function Page() {
     supabase,
     selectedFoodServings,
   );
-  const [costError, addCost, isAdding] = useActionState(addCostFunc, {
+  const [addCostRes, addCost, isAdding] = useActionState(addCostFunc, {
     success: false,
   });
+  const [lastAdd, setLastAdd] = useState("");
   const [open, setOpen] = useState(false);
 
   // Food comparison
@@ -246,13 +247,14 @@ export default function Page() {
   }, [triggerSearch, searchQuery, page]);
 
   useEffect(() => {
-    if (costError.success) {
+    if (addCostRes.success && lastAdd != addCostRes.message) {
       toast.success("Cost added successfully!", {
         position: "top-center",
       });
+      setLastAdd(addCostRes.message as string);
+      setOpen(false);
     }
-    setOpen(false);
-  }, [costError]);
+  }, [addCostRes]);
 
   return (
     <>

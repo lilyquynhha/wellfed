@@ -70,5 +70,6 @@ export async function insertServingCostOverride(
 
   return {
     success: true,
+    message: new Date().toISOString(),
   };
 }

@@ -41,7 +41,13 @@ export default function RootLayout({
 
           <Footer />
         </ThemeProvider>
-        <Toaster />
+        <Toaster
+          toastOptions={{
+            style: {
+              background: "hsl(var(--muted))",
+            },
+          }}
+        />
       </body>
     </html>
   );
