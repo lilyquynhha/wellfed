@@ -75,6 +75,7 @@ export default function Page() {
   const [costError, addCost, isAdding] = useActionState(addCostFunc, {
     success: false,
   });
+  const [open, setOpen] = useState(false);
 
   // Food comparison
   const [compareFoods, setCompareFoods] = useState<spFood[]>([]);
@@ -250,6 +251,7 @@ export default function Page() {
         position: "top-center",
       });
     }
+    setOpen(false);
   }, [costError]);
 
   return (
@@ -273,11 +275,12 @@ export default function Page() {
             >
               Unfavourite
             </Button>
-            <Dialog>
+            <Dialog open={open} onOpenChange={setOpen}>
               <DialogTrigger asChild>
                 <Button
                   size="sm"
                   variant="secondary"
+                  disabled={isLoading}
                   onClick={async () => {
                     await fetchCostOverrides();
                   }}
@@ -314,15 +317,14 @@ export default function Page() {
                             <FieldLabel>{`per ${s.display_serving_size} ${s.display_serving_unit}`}</FieldLabel>
                           </Field>
                         ))}
-                        <DialogClose asChild>
-                          <Button
-                            type="submit"
-                            disabled={isAdding}
-                            className="sticky bottom-0"
-                          >
-                            Add cost
-                          </Button>
-                        </DialogClose>
+
+                        <Button
+                          type="submit"
+                          disabled={isAdding}
+                          className="sticky bottom-0"
+                        >
+                          Add cost
+                        </Button>
                       </FieldGroup>
                     </div>
                   </form>
