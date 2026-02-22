@@ -3,10 +3,9 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { AuthButton } from "@/components/auth-button";
-import Link from "next/link";
-import { Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import Navbar from "@/components/ui/nav-bar";
+import Footer from "@/components/ui/footer";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -37,28 +36,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-            <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-              <div className="flex gap-5 items-center font-semibold">
-                <Link href={"/"}>WellFed</Link>
-                <Link href={"/my-foods/all"}>My Foods</Link>
-                <Link href={"/my-foods/create"}>Create a food</Link>
-                <Link href={"/my-creations/all"}>My creations</Link>
-                <Link href={"/my-creations/create"}>Create a meal/recipe</Link>
-                <Link href={"/settings"}>Settings</Link>
-              </div>
-
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            </div>
-          </nav>
+          <Navbar />
           {children}
 
-          <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-8">
-            <p>Copyright © 2026 WellFed</p>
-            <ThemeSwitcher />
-          </footer>
+          <Footer />
         </ThemeProvider>
         <Toaster />
       </body>
