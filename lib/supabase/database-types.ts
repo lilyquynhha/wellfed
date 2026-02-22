@@ -7,6 +7,8 @@ export type spIngr = Database["public"]["Tables"]["ingredients"]["Row"];
 export type spNutrient = Database["public"]["Tables"]["nutrients"]["Row"];
 export type spTrackedNutrient =
   Database["public"]["Tables"]["tracked_nutrients"]["Row"];
+export type spCostOverride =
+  Database["public"]["Tables"]["serving_cost_overrides"]["Row"];
 
 export type spNewFood = Omit<
   spFood,

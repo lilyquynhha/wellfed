@@ -69,7 +69,7 @@ export default function FoodsList({
                           <DialogTitle>View Details</DialogTitle>
                         </DialogHeader>
 
-                        <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-hidden">
+                        <div className="-mx-4 max-h-[50vh] overflow-y-hidden">
                           {selectedFoodServings.length > 0 ? (
                             <>
                               <div className="h-[28rem] p-1 overflow-hidden">

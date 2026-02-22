@@ -23,6 +23,7 @@ export function FoodSearchResult({
   page,
   setPage,
   onSelectedFood,
+  onSelectedFoodServings,
   addIngr,
 }: {
   foods: spFood[];
@@ -30,6 +31,7 @@ export function FoodSearchResult({
   page: number;
   setPage: (page: number) => void;
   onSelectedFood: (food: spFood) => void;
+  onSelectedFoodServings?: (servings: spServing[]) => void;
   addIngr?: (i: NewIngr) => void;
 }) {
   const supabase = createClient();
@@ -67,7 +69,10 @@ export function FoodSearchResult({
       return data as spServing[];
     }
 
-    getServings().then(setSelectedServings);
+    getServings().then((res) => {
+      setSelectedServings(res);
+      if (onSelectedFoodServings) onSelectedFoodServings(res);
+    });
   }, [selectedFood]);
 
   // Reset selected food if it is a new food search

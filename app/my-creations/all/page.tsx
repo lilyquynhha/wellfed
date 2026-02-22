@@ -175,7 +175,6 @@ export default function Page() {
             .limit(1)
             .single();
           const { owner_food_id: foodId } = data as { owner_food_id: string };
-          console.log("owner food id: ", foodId);
           const { data: food } = await supabase
             .from("foods")
             .select()

@@ -5,19 +5,32 @@ import {
   spCreation,
   spFood,
   spIngr,
+  spNutrient,
   spServing,
+  spTrackedNutrient,
 } from "@/lib/supabase/database-types";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { FullIngr, updateCreation } from "@/lib/actions/creation/creation-crud";
 import CreationForm from "@/components/creations/creation-form";
+import {
+  fetchNutrients,
+  fetchTrackedNutrients,
+} from "@/lib/actions/nutrient/nutrient-crud";
 
 export default function Page({
   params,
 }: {
   params: Promise<{ "creation-id": string }>;
 }) {
+  const supabase = createClient();
+
+  const [nutrients, setNutrients] = useState<spNutrient[]>([]);
+  const [trackedNutrients, setTrackedNutrients] = useState<spTrackedNutrient[]>(
+    [],
+  );
+
   const { "creation-id": creationId } = use(params);
   const [creationIdError, setCreationIdError] = useState(false);
   const [fetchedCreation, setFetchedCreation] = useState<{
@@ -25,8 +38,6 @@ export default function Page({
     initialType: string;
     initialIngrs: FullIngr[];
   }>();
-
-  const supabase = createClient();
 
   // Creation states
   const [creationName, setCreationName] = useState("");
@@ -53,6 +64,29 @@ export default function Page({
     }
     setIsUpdating(false);
   };
+
+  // Fetch tracked nutrients
+  useEffect(() => {
+    const fetchData = async () => {
+      const nutrientsData = await fetchNutrients(supabase);
+
+      const trackedData = await fetchTrackedNutrients(supabase);
+      setTrackedNutrients(trackedData);
+
+      nutrientsData.sort((a, b) => {
+        const aPoint = trackedData.find((t) => t.nutrient_id == a.id)
+          ? a.display_order
+          : nutrientsData.length + a.display_order;
+        const bPoint = trackedData.find((t) => t.nutrient_id == b.id)
+          ? b.display_order
+          : nutrientsData.length + b.display_order;
+        return aPoint - bPoint;
+      });
+      setNutrients(nutrientsData);
+    };
+
+    fetchData();
+  }, []);
 
   // Fetch creation
   useEffect(() => {
@@ -133,9 +167,11 @@ export default function Page({
 
   return (
     <>
-      {fetchedCreation ? (
+      {fetchedCreation && nutrients && trackedNutrients ? (
         <>
           <CreationForm
+            nutrients={nutrients}
+            trackedNutrients={trackedNutrients}
             onNameChange={setCreationName}
             onTypeChange={setCreationType}
             onIngrsChange={setIngrs}

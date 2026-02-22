@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { FoodSearchResultSkeleton } from "@/components/ui/skeleton";
 import { MAX_RESULTS } from "@/lib/actions/food/food-crud";
 import { createClient } from "@/lib/supabase/client";
-import { NewIngr, spFood, spServing } from "@/lib/supabase/database-types";
+import {
+  NewIngr,
+  spFood,
+  spNutrient,
+  spServing,
+  spTrackedNutrient,
+} from "@/lib/supabase/database-types";
 import { useEffect, useState } from "react";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -36,11 +42,15 @@ import { FullIngr } from "@/lib/actions/creation/creation-crud";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 
 export default function CreationForm({
+  nutrients,
+  trackedNutrients,
   onNameChange,
   onTypeChange,
   onIngrsChange,
   fetchedCreation,
 }: {
+  nutrients: spNutrient[];
+  trackedNutrients: spTrackedNutrient[];
   onNameChange: (n: string) => void;
   onTypeChange: (t: string) => void;
   onIngrsChange: (ingrs: FullIngr[]) => void;
@@ -269,25 +279,15 @@ export default function CreationForm({
                       <p className="w-48 break-words">Ingredient</p>
                       <p className="w-36 break-words">Amount</p>
                       <p className="w-24 break-words">Cost</p>
-                      <p className="w-24 break-words">Calories</p>
-                      <p className="w-24 break-words">Carbs</p>
-                      <p className="w-24 break-words">Protein</p>
-                      <p className="w-24 break-words">Fat</p>
-                      <p className="w-24 break-words">Saturated Fat</p>
-                      <p className="w-24 break-words">Polyunsaturated Fat</p>
-                      <p className="w-24 break-words">Monounsaturated Fat</p>
-                      <p className="w-24 break-words">Trans Fat</p>
-                      <p className="w-24 break-words">Fiber</p>
-                      <p className="w-24 break-words">Sugar</p>
-                      <p className="w-24 break-words">Sodium</p>
-                      <p className="w-24 break-words">Cholesterol</p>
-                      <p className="w-24 break-words">Potassium</p>
-                      <p className="w-24 break-words">Vitamin A</p>
-                      <p className="w-24 break-words">Vitamin C</p>
-                      <p className="w-24 break-words">Vitamin D</p>
-                      <p className="w-24 break-words">Calcium</p>
-                      <p className="w-24 break-words">Iron</p>
-                      <p className="w-24 break-words">Added Sugars</p>
+                      {nutrients.map((n) => (
+                        <p
+                          key={`${n.id}-name`}
+                          className={`w-24 break-words ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                        >
+                          {" "}
+                          {n.name}
+                        </p>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -342,67 +342,17 @@ export default function CreationForm({
                     <div className="w-24">
                       <p>{displayNumber(calcAmount(i, "cost"))}</p>
                     </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "calories"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "carbs"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "protein"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "fat"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "saturated_fat"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>
-                        {displayNumber(calcAmount(i, "polyunsaturated_fat"))}
-                      </p>
-                    </div>
-                    <div className="w-24">
-                      <p>
-                        {displayNumber(calcAmount(i, "monounsaturated_fat"))}
-                      </p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "trans_fat"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "fiber"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "sugar"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "sodium"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "cholesterol"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "potassium"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "vitamin_a"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "vitamin_c"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "vitamin_d"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "calcium"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "iron"))}</p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "added_sugars"))}</p>
-                    </div>
+                    {nutrients.map((n) => (
+                      <div key={`${n.id}-each`} className="w-24">
+                        <p
+                          className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                        >
+                          {displayNumber(
+                            calcAmount(i, n.serving_name as keyof spServing),
+                          )}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
@@ -414,63 +364,17 @@ export default function CreationForm({
                       <p className="w-24">
                         {displayNumber(calcTotal("cost"), " AUD")}
                       </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("calories"), "kcal")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("carbs"), "g")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("protein"), "g")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("fat"), "g")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("saturated_fat"), "g")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("polyunsaturated_fat"), "g")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("monounsaturated_fat"), "g")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("trans_fat"), "g")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("fiber"), "g")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("sugar"), "g")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("sodium"), "mg")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("cholesterol"), "mg")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("potassium"), "mg")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("vitamin_a"), "mcg")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("vitamin_c"), "mg")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("vitamin_d"), "mcg")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("calcium"), "mg")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("iron"), "mg")}
-                      </p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("added_sugars"), "g")}
-                      </p>
+                      {nutrients.map((n) => (
+                        <p
+                          key={`${n.id}-total`}
+                          className={`w-24 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                        >
+                          {displayNumber(
+                            calcTotal(n.serving_name as keyof spServing),
+                            n.unit,
+                          )}
+                        </p>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -487,7 +391,6 @@ export default function CreationForm({
         variant="secondary"
         className="w-full mt-6 mb-2"
         onClick={() => {
-          console.log("clicked");
           setCreationName("");
           setCreationType("");
           setIngrs([]);

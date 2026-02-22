@@ -58,7 +58,6 @@ export default function FoodComparison({
     amountInput?: string,
   ) => {
     if (!foodId) return;
-    console.log("current food: ", foods.find((f) => f.id == foodId)?.name);
 
     // Get the amount
     const amountEl = document.getElementById(
@@ -80,6 +79,11 @@ export default function FoodComparison({
           ? {
               ...f,
               computedFigures: {
+                cost: resolveAmount(
+                  selectedServing.cost,
+                  selectedServing.display_serving_size,
+                  amount,
+                ),
                 added_sugars: resolveAmount(
                   selectedServing.added_sugars,
                   selectedServing.display_serving_size,
@@ -104,11 +108,6 @@ export default function FoodComparison({
                   ) ?? 0,
                 cholesterol: resolveAmount(
                   selectedServing.cholesterol,
-                  selectedServing.display_serving_size,
-                  amount,
-                ),
-                cost: resolveAmount(
-                  selectedServing.cost,
                   selectedServing.display_serving_size,
                   amount,
                 ),
@@ -236,17 +235,22 @@ export default function FoodComparison({
     const updatedServings = [...selectedServings];
     foods.forEach((f) => {
       if (!computedFoods.find((j) => j.foodId == f.id)) {
+        const defaultServing = servings.filter(
+          (s) => s.owner_food_id == f.id,
+        )[0];
+
         updatedFoods.push({
           foodId: f.id,
-          computedFigures: servings.filter((s) => s.owner_food_id == f.id)[0],
+          computedFigures: defaultServing,
         });
 
         updatedServings.push({
           foodId: f.id,
-          servingId: servings.filter((s) => s.owner_food_id == f.id)[0].id,
+          servingId: defaultServing.id,
         });
       }
     });
+
     setComputedFoods(updatedFoods);
     setSelectedServings(updatedServings);
 
@@ -429,7 +433,12 @@ export default function FoodComparison({
                           >
                             <p
                               className={`px-2 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
-                            >{`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures[n.serving_name as keyof ServingFigures])}`}</p>
+                            >{`${displayNumber(
+                              computedFoods.find((a) => a.foodId == f.id)
+                                ?.computedFigures[
+                                n.serving_name as keyof ServingFigures
+                              ],
+                            )}`}</p>
                           </div>
                         ))}
                       </div>

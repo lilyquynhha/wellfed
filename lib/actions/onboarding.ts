@@ -25,7 +25,7 @@ export async function insertOnboardingInfo(
     .update({ username: username })
     .eq("id", user?.id);
 
-  await insertTrackedNutrients(supabase, user as User, nutrients, formData);
+  await insertTrackedNutrients(supabase, nutrients, formData);
 
   redirect("/my-foods/all");
 }

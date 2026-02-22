@@ -24,10 +24,13 @@ export async function fetchTrackedNutrients(supabase: SupabaseClient) {
 
 export async function insertTrackedNutrients(
   supabase: SupabaseClient,
-  user: User,
   nutrients: spNutrient[],
   formData: FormData,
 ) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   await supabase.from("tracked_nutrients").delete().eq("user_id", user?.id);
 
   const minNutrients = ["calories", "carbs", "protein", "fat"];
