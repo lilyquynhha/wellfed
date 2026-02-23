@@ -7,6 +7,7 @@ import { MAX_RESULTS } from "@/lib/actions/food/food-crud";
 import { createClient } from "@/lib/supabase/client";
 import {
   NewIngr,
+  spCostOverride,
   spFood,
   spNutrient,
   spServing,
@@ -97,10 +98,27 @@ export default function CreationForm({
       .select()
       .eq("owner_food_id", selectedFood?.id);
 
+    const fetchedServings = data as spServing[];
+
+    await Promise.all(
+      fetchedServings.map(async (s) => {
+        const { data: fetchedOverride } = await supabase
+          .from("serving_cost_overrides")
+          .select()
+          .eq("serving_id", s.id)
+          .eq("user_id", user?.id)
+          .maybeSingle();
+
+        if (fetchedOverride) {
+          s.cost = (fetchedOverride as spCostOverride).cost;
+        }
+      }),
+    );
+
     const updated = [...ingrs];
     updated.push({
       food: selectedFood as spFood,
-      servings: data as spServing[],
+      servings: fetchedServings,
       ingr: i,
     });
     setIngrs(updated);
@@ -360,7 +378,7 @@ export default function CreationForm({
                 <div className="flex flex-col whitespace-nowrap">
                   <div className="sticky bottom-0">
                     <div className="flex gap-2 p-2 font-semibold">
-                      <p className="w-80 text-right pr-6">Total</p>
+                      <p className="w-[21.5rem] text-right pr-6">Total</p>
                       <p className="w-24">
                         {displayNumber(calcTotal("cost"), " AUD")}
                       </p>

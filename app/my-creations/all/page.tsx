@@ -7,6 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Ingr, MAX_SEARCH_RESULTS } from "@/lib/actions/creation/creation-crud";
 import { createClient } from "@/lib/supabase/client";
 import {
+  spCostOverride,
   spCreation,
   spFood,
   spIngr,
@@ -151,7 +152,7 @@ export default function Page() {
     fetchCreation();
   }, [creationName, page, triggerSearch]);
 
-  // Fetch selected creation
+  // Fetch selected creation's ingredients
   useEffect(() => {
     if (!selectedCreation) return;
     setIsLoading(true);
@@ -190,6 +191,21 @@ export default function Page() {
             .limit(1)
             .single();
           const fetchedServing = serving as spServing;
+
+          const {
+            data: { user },
+          } = await supabase.auth.getUser();
+
+          const { data: fetchedOverride } = await supabase
+            .from("serving_cost_overrides")
+            .select()
+            .eq("serving_id", fetchedServing.id)
+            .eq("user_id", user?.id)
+            .maybeSingle();
+
+          if (fetchedOverride) {
+            fetchedServing.cost = (fetchedOverride as spCostOverride).cost;
+          }
 
           return {
             creationId: selectedCreation.id,
