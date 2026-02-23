@@ -29,6 +29,7 @@ import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ThemeSwitcher } from "../theme-switcher";
 
 interface MenuItem {
   title: string;
@@ -199,6 +200,7 @@ export default function Navbar() {
         <div className="flex gap-2">
           {user ? (
             <>
+              <ThemeSwitcher />
               <Button
                 size="sm"
                 onClick={() => {
@@ -230,6 +232,7 @@ export default function Navbar() {
             <img src="/icon.svg" className="max-h-8" alt="logo" />
           </Link>
           <Sheet>
+            <ThemeSwitcher />
             <SheetTrigger asChild>
               <Button variant="outline" size="icon">
                 <Menu className="size-4" />
