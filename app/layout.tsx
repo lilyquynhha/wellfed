@@ -24,25 +24,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={fredoka.className}>
-      <body className={`antialiased`}>
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <Navbar />
-          {children}
+          <header>
+            <Navbar />
+          </header>
+          <main className="mx-auto w-full max-w-4xl p-6">{children}</main>
 
           <Footer />
+          <Toaster
+            toastOptions={{
+              style: {
+                background: "hsl(var(--muted))",
+              },
+            }}
+          />
         </ThemeProvider>
-        <Toaster
-          toastOptions={{
-            style: {
-              background: "hsl(var(--muted))",
-            },
-          }}
-        />
       </body>
     </html>
   );

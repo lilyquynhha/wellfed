@@ -271,7 +271,7 @@ export default function FoodComparison({
 
   return (
     <div className="mt-6">
-      <Heading size={2} text="Compare Foods" className="mb-3"/>
+      <Heading size={2} text="Compare Foods" className="mb-3" />
 
       {computedFoods.length == 0 ? (
         <p>Add foods to compare.</p>
@@ -312,20 +312,20 @@ export default function FoodComparison({
                     <div className="h-20 sticky top-0 border-b-2 border-foreground bg-secondary">
                       <p className="px-2 font-semibold">Details</p>
                     </div>
-                    <div className="h-10 border-b-2 bg-background">
+                    <div className="flex items-center h-10 border-b-2 bg-background">
                       <p className="px-2 font-semibold">Serving size</p>
                     </div>
-                    <div className="h-10 border-b-2 bg-background">
+                    <div className="flex items-center h-10 border-b-2 bg-background">
                       <p className="px-2 font-semibold">Serving unit</p>
                     </div>
-                    <div className="border-b-2 bg-background">
+                    <div className="flex items-center border-b-2 bg-background">
                       <p className="px-2 font-semibold">Cost</p>
                     </div>
 
                     {nutrients.map((n, i) => (
                       <div
                         key={`${n.id}-name`}
-                        className={`border-b-2 ${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
+                        className={`flex items-center border-b-2 ${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
                       >
                         <p
                           className={`px-2 font-semibold ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}

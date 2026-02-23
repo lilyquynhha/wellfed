@@ -176,111 +176,107 @@ export default function Navbar() {
   }, []);
 
   return (
-    <section className="p-4">
-      <div className="container mx-auto">
-        {/* Desktop Menu */}
-        <nav className="hidden items-center justify-between md:flex">
-          <div className="flex items-center gap-6">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/icon.svg" className="max-h-8" alt="logo" />
-              <span className="text-lg font-semibold tracking-tighter">
-                WellFed
-              </span>
-            </Link>
-            <div className="flex items-center">
-              <NavigationMenu>
-                <NavigationMenuList>
-                  {currentMenu.map((item) => renderMenuItem(item))}
-                </NavigationMenuList>
-              </NavigationMenu>
-            </div>
+    <section className="p-6 mx-auto max-w-6xl">
+      {/* Desktop Menu */}
+      <nav className="hidden items-center justify-between md:flex">
+        <div className="flex items-center gap-6">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/icon.svg" className="max-h-8" alt="logo" />
+            <span className="text-lg font-semibold tracking-tighter">
+              WellFed
+            </span>
+          </Link>
+          <div className="flex items-center">
+            <NavigationMenu>
+              <NavigationMenuList>
+                {currentMenu.map((item) => renderMenuItem(item))}
+              </NavigationMenuList>
+            </NavigationMenu>
           </div>
+        </div>
 
-          <div className="flex gap-2">
-            {user ? (
-              <>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    logOut();
-                  }}
+        <div className="flex gap-2">
+          {user ? (
+            <>
+              <Button
+                size="sm"
+                onClick={() => {
+                  logOut();
+                }}
+              >
+                Sign out
+              </Button>
+            </>
+          ) : (
+            <>
+              {" "}
+              <Button asChild variant="outline" size="sm">
+                <Link href="/auth/login">Login</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/auth/sign-up">Sign Up</Link>
+              </Button>
+            </>
+          )}
+        </div>
+      </nav>
+
+      {/* Mobile Menu */}
+      <div className="block md:hidden">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2">
+            <img src="/icon.svg" className="max-h-8" alt="logo" />
+          </Link>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Menu className="size-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle>
+                  <Link href="/" className="flex items-center gap-2">
+                    <img src="/icon.svg" className="max-h-8" alt="logo" />
+                  </Link>
+                </SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-6 p-4">
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="flex w-full flex-col gap-4"
                 >
-                  Sign out
-                </Button>
-              </>
-            ) : (
-              <>
-                {" "}
-                <Button asChild variant="outline" size="sm">
-                  <Link href="/auth/login">Login</Link>
-                </Button>
-                <Button asChild size="sm">
-                  <Link href="/auth/sign-up">Sign Up</Link>
-                </Button>
-              </>
-            )}
-          </div>
-        </nav>
+                  {currentMenu.map((item) => renderMobileMenuItem(item))}
+                </Accordion>
 
-        {/* Mobile Menu */}
-        <div className="block md:hidden">
-          <div className="flex items-center justify-between">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
-              <img src="/icon.svg" className="max-h-8" alt="logo" />
-            </Link>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Menu className="size-4" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent className="overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>
-                    <Link href="/" className="flex items-center gap-2">
-                      <img src="/icon.svg" className="max-h-8" alt="logo" />
-                    </Link>
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-6 p-4">
-                  <Accordion
-                    type="single"
-                    collapsible
-                    className="flex w-full flex-col gap-4"
-                  >
-                    {currentMenu.map((item) => renderMobileMenuItem(item))}
-                  </Accordion>
-
-                  <div className="flex flex-col gap-3">
-                    {user ? (
-                      <>
-                        <Button
-                          onClick={() => {
-                            logOut();
-                          }}
-                        >
-                          Sign out
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button asChild variant="outline">
-                          <Link href="/auth/login">Login</Link>
-                        </Button>
-                        <Button asChild>
-                          <Link href="/auth/sign-up">
-                            Sign up
-                          </Link>
-                        </Button>
-                      </>
-                    )}
-                  </div>
+                <div className="flex flex-col gap-3">
+                  {user ? (
+                    <>
+                      <Button
+                        onClick={() => {
+                          logOut();
+                        }}
+                      >
+                        Sign out
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button asChild variant="outline">
+                        <Link href="/auth/login">Login</Link>
+                      </Button>
+                      <Button asChild>
+                        <Link href="/auth/sign-up">Sign up</Link>
+                      </Button>
+                    </>
+                  )}
                 </div>
-              </SheetContent>
-            </Sheet>
-          </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </section>
