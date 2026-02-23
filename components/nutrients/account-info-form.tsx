@@ -1,6 +1,5 @@
 "use client";
 
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
   Field,
@@ -22,18 +21,22 @@ import { Input } from "../ui/input";
 import { isUsernameUnique } from "@/lib/actions/profile/profile-crud";
 import { User } from "@supabase/supabase-js";
 import { Spinner } from "../ui/spinner";
-import { insertOnboardingInfo } from "@/lib/actions/onboarding";
-
-export default function OnboardingForm({
+import { updateAccount } from "@/lib/actions/account";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+export default function AccountInfoForm({
   nutrients,
   profile,
   trackedNutrients,
+  redirect,
 }: {
   nutrients: spNutrient[];
   profile?: spProfile;
   trackedNutrients?: spTrackedNutrient[];
+  redirect?: string;
 }) {
   const supabase = createClient();
+  const router = useRouter();
 
   type UsernameState = {
     username: string;
@@ -45,15 +48,27 @@ export default function OnboardingForm({
     isUnique: false,
   });
   const [isValidating, setIsValidating] = useState(false);
+  const [updatedTracked, setUpdatedTracked] = useState<spTrackedNutrient[]>(
+    trackedNutrients ?? [],
+  );
 
-  const insertActionFunc = insertOnboardingInfo.bind(null, nutrients, supabase);
+  const insertActionFunc = updateAccount.bind(null, nutrients, supabase);
   const [insertState, insertAction, isInserting] = useActionState(
     insertActionFunc,
     {
-      success: false,
+      insertedData: updatedTracked,
       message: "",
     },
   );
+  const [lastUpdate, setLastUpdate] = useState("");
+
+  useEffect(() => {
+    setUsername({
+      username: profile?.username ?? "",
+      isUnique: false,
+    });
+    setUpdatedTracked(trackedNutrients ?? []);
+  }, []);
 
   useEffect(() => {
     if (!username.username) return;
@@ -79,8 +94,15 @@ export default function OnboardingForm({
   }, [username.username]);
 
   useEffect(() => {
-    if (insertState.success) redirect("/my-foods/all");
-  }, [insertState]);
+    if (insertState.message != lastUpdate) {
+      toast.success("Account updated successfully!", {
+        position: "top-center",
+      });
+      setLastUpdate(insertState.message);
+      setUpdatedTracked(insertState.insertedData);
+      if (redirect) router.push(redirect);
+    }
+  }, [insertState.insertedData]);
   return (
     <div>
       {nutrients && (
@@ -88,7 +110,6 @@ export default function OnboardingForm({
           <Field className="flex flex-row flex-wrap items-center mb-2">
             <FieldLabel className="max-w-fit">Username:</FieldLabel>
             <Input
-              // defaultValue={profile?.username}
               value={username.username}
               onChange={(e) =>
                 setUsername((prev) => ({ ...prev, username: e.target.value }))
@@ -120,7 +141,10 @@ export default function OnboardingForm({
               Select nutrients you want to highlight when viewing your
               foods/creations details.
             </FieldDescription>
-            <FieldGroup className="grid grid-cols-3 md:grid-cols-4 gap-4">
+            <FieldGroup
+              className="grid grid-cols-3 md:grid-cols-4 gap-4"
+              key={updatedTracked.toString()}
+            >
               {nutrients.map((n) => (
                 <Field key={n.id} orientation="horizontal">
                   <Checkbox
@@ -131,7 +155,7 @@ export default function OnboardingForm({
                       n.serving_name == "carbs" ||
                       n.serving_name == "protein" ||
                       n.serving_name == "fat" ||
-                      trackedNutrients?.find((tn) => tn.nutrient_id == n.id)
+                      updatedTracked?.find((tn) => tn.nutrient_id == n.id)
                         ? true
                         : false
                     }
@@ -159,11 +183,8 @@ export default function OnboardingForm({
             }
             className="w-full mt-4"
           >
-            Confirm
+            Update
           </Button>
-          {!insertState.success && insertState.message && (
-            <p className="mt-2 text-sm text-red-500">{`Error: ${insertState.message}`}</p>
-          )}
         </form>
       )}
     </div>

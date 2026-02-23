@@ -1,14 +1,13 @@
-import { SupabaseClient, User } from "@supabase/supabase-js";
-import { redirect } from "next/navigation";
-import { spNutrient } from "../supabase/database-types";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { spNutrient, spTrackedNutrient } from "../supabase/database-types";
 import { insertTrackedNutrients } from "./nutrient/nutrient-crud";
 
 export type State = {
-  success: boolean;
+  insertedData: spTrackedNutrient[];
   message: string;
 };
 
-export async function insertOnboardingInfo(
+export async function updateAccount(
   nutrients: spNutrient[],
   supabase: SupabaseClient,
   prevState: State,
@@ -25,7 +24,14 @@ export async function insertOnboardingInfo(
     .update({ username: username })
     .eq("id", user?.id);
 
-  await insertTrackedNutrients(supabase, nutrients, formData);
+  const insertedData = await insertTrackedNutrients(
+    supabase,
+    nutrients,
+    formData,
+  );
 
-  redirect("/my-foods/all");
+  return {
+    insertedData: insertedData,
+    message: new Date().toISOString(),
+  };
 }

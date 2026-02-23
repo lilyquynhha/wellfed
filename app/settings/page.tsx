@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import OnboardingForm from "@/components/nutrients/onboarding-form";
+import AccountInfoForm from "@/components/nutrients/account-info-form";
 import {
   fetchNutrients,
   fetchTrackedNutrients,
@@ -24,10 +24,12 @@ export default async function Page() {
   const trackedNutrients = await fetchTrackedNutrients(supabase);
 
   return (
-    <OnboardingForm
-      profile={profile}
-      nutrients={nutrients}
-      trackedNutrients={trackedNutrients}
-    />
+    <>
+      <AccountInfoForm
+        profile={profile}
+        nutrients={nutrients}
+        trackedNutrients={trackedNutrients}
+      />
+    </>
   );
 }

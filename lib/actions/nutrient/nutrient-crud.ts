@@ -1,5 +1,5 @@
 import { spNutrient, spTrackedNutrient } from "@/lib/supabase/database-types";
-import { SupabaseClient, User } from "@supabase/supabase-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export async function fetchNutrients(supabase: SupabaseClient) {
   const { data } = await supabase.from("nutrients").select();
@@ -35,16 +35,21 @@ export async function insertTrackedNutrients(
 
   const minNutrients = ["calories", "carbs", "protein", "fat"];
 
-  await supabase.from("tracked_nutrients").insert(
-    nutrients
-      .filter(
-        (n) =>
-          minNutrients.includes(n.serving_name) ||
-          formData.get(`${n.id}`) == "on",
-      )
-      .map((n) => ({
-        user_id: user?.id,
-        nutrient_id: n.id,
-      })),
-  );
+  const { data } = await supabase
+    .from("tracked_nutrients")
+    .insert(
+      nutrients
+        .filter(
+          (n) =>
+            minNutrients.includes(n.serving_name) ||
+            formData.get(`${n.id}`) == "on",
+        )
+        .map((n) => ({
+          user_id: user?.id,
+          nutrient_id: n.id,
+        })),
+    )
+    .select();
+
+  return data as spTrackedNutrient[];
 }
