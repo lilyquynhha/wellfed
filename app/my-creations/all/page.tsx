@@ -24,6 +24,7 @@ import {
   fetchNutrients,
   fetchTrackedNutrients,
 } from "@/lib/actions/nutrient/nutrient-crud";
+import { Heading } from "@/components/typography";
 
 export default function Page() {
   const supabase = createClient();
@@ -264,7 +265,7 @@ export default function Page() {
       </div>
 
       <div className="mt-6">
-        <h2 className="text-4xl font-medium mb-4">View Creation</h2>
+        <Heading size={2} text="View Creation" className="mb-3"/>
         {!selectedCreation ? (
           <p>Select a creation to view details.</p>
         ) : !isLoading ? (
@@ -282,7 +283,7 @@ export default function Page() {
       </div>
 
       <div className="mt-6">
-        <h2 className="text-4xl font-medium mb-4">Compare Creations</h2>
+        <Heading size={2} text="Compare Creations" className="mb-3"/>
         {compareCreations.length > 0 ? (
           <CreationComparison
             nutrients={nutrients}

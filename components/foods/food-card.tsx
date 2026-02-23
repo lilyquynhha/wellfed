@@ -18,6 +18,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { displayNumber, resolveAmount } from "@/lib/actions/food/food-logic";
 import { MacroChart } from "../visuals/macro-chart";
+import { Heading } from "../typography";
 
 export function FoodCard({
   food,
@@ -76,7 +77,7 @@ export function FoodCard({
     <>
       {/* Header: Food name & Serving options */}
       <div className="px-5 pt-4 mb-4">
-        <h2 className="text-2xl font-semibold">{food.name}</h2>
+        <Heading size={3} text={food.name} className="mb-3" />
         {food.brand_name && (
           <p className="text-muted-foreground">{food.brand_name}</p>
         )}

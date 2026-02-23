@@ -1,9 +1,10 @@
+import { Heading } from "@/components/typography";
 import React, { Suspense } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="mx-auto w-full max-w-4xl py-6 px-6">
-      <h1 className="text-5xl mb-10">Setting up your account</h1>
+      <Heading size={1} text="Account Setup" className="mb-10" />
       <Suspense>{children}</Suspense>
     </div>
   );

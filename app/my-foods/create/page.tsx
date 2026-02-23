@@ -72,16 +72,15 @@ export default function Page() {
   }, [insertState]);
 
   return (
-    <div className="mx-auto md:w-[80%] lg:w-[70%] py-6 px-6 overflow-x-hidden">
-      <h1 className="text-5xl mb-10">Create a food</h1>
+    <>
       <Collapsible>
         <CollapsibleTrigger asChild>
-          <Button variant="ghost" className="group ">
+          <Button variant="ghost" className="group text-base">
             <ChevronRightIcon className="transition-transform group-data-[state=open]:rotate-90" />
-            Search ingredients
+            Use Fatsecret API response
           </Button>
         </CollapsibleTrigger>
-        <CollapsibleContent>
+        <CollapsibleContent className="mt-2">
           {/** Validate Fatsecret response */}
           <form action={validateFoodAction}>
             <FieldGroup>
@@ -147,6 +146,6 @@ export default function Page() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

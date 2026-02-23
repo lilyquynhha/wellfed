@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/collapsible";
 import { FullIngr } from "@/lib/actions/creation/creation-crud";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
+import { Heading } from "../typography";
 
 export default function CreationForm({
   nutrients,
@@ -262,7 +263,7 @@ export default function CreationForm({
             Search foods
           </Button>
         </CollapsibleTrigger>
-        <CollapsibleContent>
+        <CollapsibleContent className="mt-2">
           <SearchBar
             setSearchQuery={setSearchQuery}
             placeholder="Enter food name"
@@ -286,7 +287,7 @@ export default function CreationForm({
       </Collapsible>
 
       <div className="mt-4">
-        <h2 className="text-xl font-medium mb-2">Added ingredients:</h2>
+        <Heading size={3} text="Added ingredients" className="mb-3"/>
         {ingrs.length > 0 ? (
           <div className="flex">
             <ScrollArea className="w-full max-h-96 border-2 border-muted rounded-xl">

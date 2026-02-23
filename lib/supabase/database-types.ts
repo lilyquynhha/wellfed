@@ -20,6 +20,7 @@ export type spNewFood = Omit<
   | "created_at"
   | "updated_at"
   | "deleted_at"
+  | "search_vector"
 >;
 
 export type spNewServing = Omit<

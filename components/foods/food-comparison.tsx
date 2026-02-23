@@ -21,6 +21,7 @@ import {
 } from "../ui/select";
 import { useEffect, useState } from "react";
 import { displayNumber, resolveAmount } from "@/lib/actions/food/food-logic";
+import { Heading } from "../typography";
 
 export default function FoodComparison({
   nutrients,
@@ -270,7 +271,7 @@ export default function FoodComparison({
 
   return (
     <div className="mt-6">
-      <h2 className="text-4xl mb-4">Compare foods</h2>
+      <Heading size={2} text="Compare Foods" className="mb-3"/>
 
       {computedFoods.length == 0 ? (
         <p>Add foods to compare.</p>
