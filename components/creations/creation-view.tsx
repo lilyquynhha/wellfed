@@ -22,9 +22,10 @@ import {
 } from "../ui/alert-dialog";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { Field, FieldLabel } from "../ui/field";
+import { Field } from "../ui/field";
 import { Input } from "../ui/input";
 import { useState } from "react";
+import { MacroChart } from "../visuals/macro-chart";
 
 export function CreationView({
   selectedCreation,
@@ -60,23 +61,40 @@ export function CreationView({
   };
   return (
     <>
-      <p>
-        {selectedCreation.type.charAt(0).toUpperCase() +
-          selectedCreation.type.slice(1).toLowerCase()}{" "}
-        name: <span className="font-semibold">{selectedCreation.name}</span>
-      </p>
-      <Field className="flex flex-row items-center mt-2">
-        <p className="max-w-fit">Serving size:</p>
-        <Input
-          className="basis-24"
-          value={amount}
-          onChange={(e) => setAmount(Number(e.target.value))}
-          type="number"
-          step="any"
-          min="0"
-        />
-        <p className="max-w-fit">serving</p>
-      </Field>
+      <div>
+        <p>
+          {selectedCreation.type.charAt(0).toUpperCase() +
+            selectedCreation.type.slice(1).toLowerCase()}{" "}
+          name: <span className="font-semibold">{selectedCreation.name}</span>
+        </p>
+        <Field className="flex flex-row items-center mt-2">
+          <p className="max-w-fit">Serving size:</p>
+          <Input
+            className="basis-24"
+            value={amount}
+            onChange={(e) => setAmount(Number(e.target.value))}
+            type="number"
+            step="any"
+            min="0"
+          />
+          <p className="max-w-fit">serving</p>
+        </Field>
+      </div>
+
+      <div>
+        {calcTotal("calories") != 0 && (
+          <MacroChart
+            macros={{
+              calories: calcTotal("calories"),
+              carbs: calcTotal("carbs"),
+              protein: calcTotal("protein"),
+              fat: calcTotal("fat"),
+            }}
+            size={40}
+          />
+        )}
+      </div>
+
       {/* Creation actions */}
       <div className="flex justify-end gap-2 mb-2">
         <Button variant="secondary" size="sm">
@@ -114,7 +132,7 @@ export function CreationView({
       </div>
       <div className="flex">
         <ScrollArea className="w-full max-h-96 border-2 border-muted rounded-xl">
-          <div className="sticky top-0 z-40 border-foreground bg-primary-foreground mb-2">
+          <div className="sticky top-0 z-40 border-foreground bg-secondary mb-2">
             <div className="flex flex-col">
               <div className="sticky top-0 border-b-2 border-foreground">
                 <div className="flex gap-2 p-2 font-semibold">
@@ -124,7 +142,7 @@ export function CreationView({
                   {nutrients.map((n) => (
                     <p
                       key={`${n.id}-name`}
-                      className={`w-24 break-words ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                      className={`w-24 break-words ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                     >
                       {n.name}
                     </p>
@@ -151,7 +169,7 @@ export function CreationView({
                   {nutrients.map((n) => (
                     <div key={`${n.id}-value`} className="w-24">
                       <p
-                        className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                        className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                       >
                         {displayNumber(
                           calcAmount(i, n.serving_name as keyof spServing),
@@ -163,18 +181,18 @@ export function CreationView({
               </div>
             );
           })}
-          <div className="sticky bottom-0 z-40 border-foreground bg-primary-foreground mb-2">
+          <div className="sticky bottom-0 z-40 border-foreground bg-secondary mb-2">
             <div className="flex flex-col whitespace-nowrap">
               <div className="sticky bottom-0">
                 <div className="flex gap-2 p-2 font-semibold">
-                  <p className="w-80 text-right pr-6">Total</p>
+                  <p className="w-[21.5rem] text-right pr-6">Total</p>
                   <p className="w-24">
                     {displayNumber(calcTotal("cost"), " AUD")}
                   </p>
                   {nutrients.map((n) => (
                     <p
                       key={`${n.id}-total`}
-                      className={`w-24 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                      className={`w-24 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                     >
                       {displayNumber(
                         calcTotal(n.serving_name as keyof spServing),

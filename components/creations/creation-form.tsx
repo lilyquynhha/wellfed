@@ -272,7 +272,7 @@ export default function CreationForm({
         {ingrs.length > 0 ? (
           <div className="flex">
             <ScrollArea className="w-full max-h-96 border-2 border-muted rounded-xl">
-              <div className="sticky top-0 z-40 border-foreground bg-primary-foreground mb-2">
+              <div className="sticky top-0 z-40 border-foreground bg-secondary mb-2">
                 <div className="flex flex-col">
                   <div className="sticky top-0 border-b-2 border-foreground">
                     <div className="flex gap-2 p-2 font-semibold">
@@ -282,7 +282,7 @@ export default function CreationForm({
                       {nutrients.map((n) => (
                         <p
                           key={`${n.id}-name`}
-                          className={`w-24 break-words ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                          className={`w-24 break-words ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                         >
                           {" "}
                           {n.name}
@@ -345,7 +345,7 @@ export default function CreationForm({
                     {nutrients.map((n) => (
                       <div key={`${n.id}-each`} className="w-24">
                         <p
-                          className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                          className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                         >
                           {displayNumber(
                             calcAmount(i, n.serving_name as keyof spServing),
@@ -356,7 +356,7 @@ export default function CreationForm({
                   </div>
                 </div>
               ))}
-              <div className="sticky bottom-0 z-40 border-foreground bg-primary-foreground mb-2">
+              <div className="sticky bottom-0 z-40 border-foreground bg-secondary mb-2">
                 <div className="flex flex-col whitespace-nowrap">
                   <div className="sticky bottom-0">
                     <div className="flex gap-2 p-2 font-semibold">
@@ -367,7 +367,7 @@ export default function CreationForm({
                       {nutrients.map((n) => (
                         <p
                           key={`${n.id}-total`}
-                          className={`w-24 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                          className={`w-24 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                         >
                           {displayNumber(
                             calcTotal(n.serving_name as keyof spServing),

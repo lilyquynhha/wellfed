@@ -6,8 +6,8 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { spServing } from "@/lib/supabase/database-types";
 import { displayNumber } from "@/lib/actions/food/food-logic";
+import { cn } from "@/lib/utils";
 
 const chartConfig = {
   amount: {
@@ -27,8 +27,10 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function FoodChart({
+export function MacroChart({
   macros,
+  className,
+  size,
 }: {
   macros: {
     calories: number;
@@ -36,18 +38,11 @@ export function FoodChart({
     protein: number;
     fat: number;
   };
+  size?: number;
+  className?: string;
 }) {
   if (macros.carbs == 0 && macros.protein == 0 && macros.fat == 0) {
-    return (
-      <>
-        <div className="flex justify-between items-end mt-2">
-          <p className="text-2xl font-extrabold">Calories</p>
-          <p className="text-5xl font-extrabold">0</p>
-        </div>
-
-        <div className="h-2 bg-primary mt-2 mb-3"></div>
-      </>
-    );
+    return;
   }
 
   const chartData = [
@@ -59,7 +54,7 @@ export function FoodChart({
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto aspect-square max-h-32"
+      className={cn(`mx-auto aspect-square max-h-${size}`, className)}
     >
       <PieChart>
         <ChartTooltip
@@ -70,7 +65,7 @@ export function FoodChart({
           data={chartData}
           dataKey="amount"
           nameKey="macro"
-          innerRadius={35}
+          innerRadius={size ? (5 * size) / 4 : 40}
           strokeWidth={5}
         >
           <Label

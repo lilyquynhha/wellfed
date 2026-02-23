@@ -17,7 +17,7 @@ import { Field } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { displayNumber, resolveAmount } from "@/lib/actions/food/food-logic";
-import { FoodChart } from "./food-chart";
+import { MacroChart } from "../visuals/macro-chart";
 
 export function FoodCard({
   food,
@@ -137,30 +137,46 @@ export function FoodCard({
         <div>
           {serving && (
             <>
-              <FoodChart
-                macros={{
-                  calories: resolveAmount(
-                    serving.calories,
-                    serving.display_serving_size,
-                    amount,
-                  ) as number,
-                  carbs: resolveAmount(
-                    serving.carbs,
-                    serving.display_serving_size,
-                    amount,
-                  ) as number,
-                  protein: resolveAmount(
-                    serving.protein,
-                    serving.display_serving_size,
-                    amount,
-                  ) as number,
-                  fat: resolveAmount(
-                    serving.fat,
-                    serving.display_serving_size,
-                    amount,
-                  ) as number,
-                }}
-              />
+              {resolveAmount(
+                serving.calories,
+                serving.display_serving_size,
+                amount,
+              ) != 0 ? (
+                <MacroChart
+                  macros={{
+                    calories: resolveAmount(
+                      serving.calories,
+                      serving.display_serving_size,
+                      amount,
+                    ) as number,
+                    carbs: resolveAmount(
+                      serving.carbs,
+                      serving.display_serving_size,
+                      amount,
+                    ) as number,
+                    protein: resolveAmount(
+                      serving.protein,
+                      serving.display_serving_size,
+                      amount,
+                    ) as number,
+                    fat: resolveAmount(
+                      serving.fat,
+                      serving.display_serving_size,
+                      amount,
+                    ) as number,
+                  }}
+                  size={36}
+                />
+              ) : (
+                <>
+                  <div className="flex justify-between items-end mt-2">
+                    <p className="text-2xl font-extrabold">Calories</p>
+                    <p className="text-5xl font-extrabold">0</p>
+                  </div>
+
+                  <div className="h-2 bg-primary mt-2 mb-3"></div>
+                </>
+              )}
 
               <div className="flex space-x-4">
                 <p className="font-extrabold">Total Fat</p>
@@ -334,7 +350,7 @@ export function FoodCard({
                 </p>
               </div>
 
-              <div className="h-2 bg-primary mt-2 mb-3"></div>
+              <div className="h-2 bg-foreground mt-2 mb-3"></div>
 
               <div className="flex space-x-4">
                 <p>Vitamin D</p>

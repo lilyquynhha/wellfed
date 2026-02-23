@@ -41,7 +41,7 @@ export default function FoodsList({
             {foods.map((f) => (
               <Card
                 key={f.id}
-                className={`mb-2 p-3 cursor-pointer hover:bg-muted ${chosenFood == f.id && "bg-muted"}`}
+                className={`mb-2 p-3 cursor-pointer hover:bg-accent ${chosenFood == f.id && "bg-accent"}`}
                 onClick={() => {
                   onSelect(f);
                   setChosenFood(f.id);

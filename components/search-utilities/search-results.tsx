@@ -134,7 +134,7 @@ export function CreationSearchResult({
             {creations.map((c) => (
               <Card
                 key={c.id}
-                className={`mb-2 p-3 cursor-pointer hover:bg-muted ${selectedCreation == c.id && "bg-muted"}`}
+                className={`mb-2 p-3 cursor-pointer hover:bg-accent ${selectedCreation == c.id && "bg-accent"}`}
                 onClick={() => {
                   onSelectCreation(c);
                   setSelectedCreation(c.id);

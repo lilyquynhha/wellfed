@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Fredoka } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Toaster } from "@/components/ui/sonner";
 import Navbar from "@/components/ui/nav-bar";
 import Footer from "@/components/ui/footer";
@@ -16,11 +15,7 @@ export const metadata: Metadata = {
   title: "WellFed",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  display: "swap",
-  subsets: ["latin"],
-});
+const fredoka = Fredoka({ subsets: ["latin"], variable: "--font-sans" });
 
 export default function RootLayout({
   children,
@@ -28,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+    <html lang="en" suppressHydrationWarning className={fredoka.className}>
+      <body className={`antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

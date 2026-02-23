@@ -308,7 +308,7 @@ export default function FoodComparison({
               <div className="flex">
                 <div className="sticky left-0 z-40 border-r-2 border-foreground">
                   <div className="flex flex-col w-44 whitespace-nowrap">
-                    <div className="h-20 sticky top-0 border-b-2 border-foreground bg-primary-foreground">
+                    <div className="h-20 sticky top-0 border-b-2 border-foreground bg-secondary">
                       <p className="px-2 font-semibold">Details</p>
                     </div>
                     <div className="h-10 border-b-2 bg-background">
@@ -327,7 +327,7 @@ export default function FoodComparison({
                         className={`border-b-2 ${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
                       >
                         <p
-                          className={`px-2 font-semibold ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                          className={`px-2 font-semibold ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                         >
                           {n.name}
                         </p>
@@ -340,7 +340,7 @@ export default function FoodComparison({
                   {foods.map((f) => {
                     return (
                       <div key={f.id} className="w-36">
-                        <div className="h-20 overflow-auto sticky top-0 bg-primary-foreground border-b-2 border-foreground">
+                        <div className="h-20 overflow-auto sticky top-0 bg-secondary border-b-2 border-foreground">
                           <Button
                             size="icon"
                             variant="ghost"
@@ -432,7 +432,7 @@ export default function FoodComparison({
                             className={`border-b-2 ${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
                           >
                             <p
-                              className={`px-2 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                              className={`px-2 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                             >{`${displayNumber(
                               computedFoods.find((a) => a.foodId == f.id)
                                 ?.computedFigures[

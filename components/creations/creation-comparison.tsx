@@ -66,7 +66,7 @@ export function CreationComparison({
   return (
     <div className="flex">
       <ScrollArea className="w-full max-h-96 border-2 border-muted rounded-xl">
-        <div className="sticky top-0 z-40 border-foreground bg-primary-foreground mb-2">
+        <div className="sticky top-0 z-40 border-foreground bg-secondary mb-2">
           <div className="flex flex-col">
             <div className="sticky top-0 border-b-2 border-foreground">
               <div className="flex gap-2 p-2 font-semibold">
@@ -76,7 +76,7 @@ export function CreationComparison({
                 {nutrients.map((n) => (
                   <p
                     key={`${n.id}-name`}
-                    className={`w-24 break-words ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                    className={`w-24 break-words ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                   >
                     {n.name}
                   </p>
@@ -131,7 +131,7 @@ export function CreationComparison({
               {nutrients.map((n) => (
                 <div key={`${n.id}-total`} className="w-24">
                   <p
-                    className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-teal-500" : ""}`}
+                    className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                   >
                     {displayNumber(
                       calc(c, n.serving_name as keyof spServing),
