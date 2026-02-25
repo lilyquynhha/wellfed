@@ -25,6 +25,7 @@ import {
   fetchTrackedNutrients,
 } from "@/lib/actions/nutrient/nutrient-crud";
 import { Heading } from "@/components/typography";
+import Link from "next/link";
 
 export default function Page() {
   const supabase = createClient();
@@ -51,8 +52,12 @@ export default function Page() {
   const [compareIngrs, setCompareIngrs] = useState<Ingr[]>([]);
 
   const handleDelete = async () => {
-    await supabase.from("creations").delete().eq("id", selectedCreation?.id);
+    if (!selectedCreation) return;
+    await supabase.from("creations").delete().eq("id", selectedCreation.id);
+    removeFromCompare(selectedCreation);
     setSelectedCreation(undefined);
+    setCreationName("");
+    setCreationType("");
     setTriggerSearch(!triggerSearch);
 
     toast.success("Creation deleted successfully", {
@@ -252,6 +257,16 @@ export default function Page() {
         <div className="basis-1/2">
           {isSearching ? (
             <CreationSearchResultSkeletion />
+          ) : !creationName && totalResults == 0 ? (
+            <p>
+              <Link
+                href="/my-creations/create"
+                className="underline underline-offset-2 hover:text-highlight"
+              >
+                Create a meal/recipe
+              </Link>{" "}
+              to view it here.
+            </p>
           ) : (
             <CreationSearchResult
               creations={foundCreations}
@@ -265,7 +280,7 @@ export default function Page() {
       </div>
 
       <div className="mt-6">
-        <Heading size={2} text="View Creation" className="mb-3"/>
+        <Heading size={2} text="View Creation" className="mb-3" />
         {!selectedCreation ? (
           <p>Select a creation to view details.</p>
         ) : !isLoading ? (
@@ -283,7 +298,7 @@ export default function Page() {
       </div>
 
       <div className="mt-6">
-        <Heading size={2} text="Compare Creations" className="mb-3"/>
+        <Heading size={2} text="Compare Creations" className="mb-3" />
         {compareCreations.length > 0 ? (
           <CreationComparison
             nutrients={nutrients}

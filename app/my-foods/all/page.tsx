@@ -34,7 +34,6 @@ import {
 } from "@/lib/actions/nutrient/nutrient-crud";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -114,15 +113,20 @@ export default function Page() {
   };
   const [isFetchingCost, setIsFetchingCost] = useState(false);
 
-  const handleUnfavouriteFood = async (f: spFood) => {
-    await supabase.from("favourite_foods").delete().eq("food_id", f.id);
+  const handleUnfavouriteFood = async () => {
+    await supabase
+      .from("favourite_foods")
+      .delete()
+      .eq("food_id", selectedFood?.id);
 
     setTriggerSearch(!triggerSearch);
   };
 
-  const handleDeleteFood = async (f: spFood) => {
-    await supabase.from("foods").delete().eq("id", f.id);
+  const handleDeleteFood = async () => {
+    if (!selectedFood) return;
+    await supabase.from("foods").delete().eq("id", selectedFood.id);
 
+    removeFoodFromCompare(selectedFood);
     setTriggerSearch(!triggerSearch);
 
     toast.success("Food deleted successfully", {
@@ -130,15 +134,16 @@ export default function Page() {
     });
   };
 
-  const addFoodToCompare = async (food: spFood) => {
-    if (compareFoods.find((f) => f.id === food.id)) return;
+  const addFoodToCompare = async () => {
+    if (!selectedFood) return;
+    if (compareFoods.find((f) => f.id === selectedFood.id)) return;
     const updatedFoods = new Array(...compareFoods);
-    updatedFoods.push(food);
+    updatedFoods.push(selectedFood);
 
     const { data } = await supabase
       .from("servings")
       .select()
-      .eq("owner_food_id", food.id);
+      .eq("owner_food_id", selectedFood.id);
 
     const addedServings = data as spServing[];
     const updatedServings = new Array(...compareServings);
@@ -151,7 +156,7 @@ export default function Page() {
     // Get serving cost overrides (if any)
     await Promise.all(
       updatedServings.map(async (s, i) => {
-        if (s.owner_food_id == food.id) {
+        if (s.owner_food_id == selectedFood.id) {
           const { data: fetchedOverride } = await supabase
             .from("serving_cost_overrides")
             .select()
@@ -272,7 +277,7 @@ export default function Page() {
               variant="secondary"
               disabled={isLoading || !selectedFood.is_public}
               onClick={() => {
-                handleUnfavouriteFood(selectedFood);
+                handleUnfavouriteFood();
               }}
             >
               Unfavourite
@@ -366,7 +371,7 @@ export default function Page() {
                   <AlertDialogAction
                     variant="destructive"
                     onClick={() => {
-                      handleDeleteFood(selectedFood);
+                      handleDeleteFood();
                     }}
                   >
                     Delete
@@ -380,7 +385,7 @@ export default function Page() {
               variant="secondary"
               disabled={isLoading}
               onClick={() => {
-                addFoodToCompare(selectedFood);
+                addFoodToCompare();
               }}
             >
               Compare
@@ -392,6 +397,23 @@ export default function Page() {
       {/* Food search results */}
       {isLoading ? (
         <FoodSearchResultSkeleton />
+      ) : !searchQuery && totalResults == 0 ? (
+        <p>
+          <Link
+            href="/my-foods/create"
+            className="underline underline-offset-2 hover:text-highlight"
+          >
+            Create your own foods
+          </Link>{" "}
+          or favourite foods from the{" "}
+          <Link
+            href="/"
+            className="underline underline-offset-2 hover:text-highlight"
+          >
+            public database
+          </Link>
+          .
+        </p>
       ) : (
         <FoodSearchResult
           foods={foundFoods}
