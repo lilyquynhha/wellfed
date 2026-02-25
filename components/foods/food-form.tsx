@@ -174,7 +174,7 @@ export default function FoodForm({
           </Field>
         </FieldGroup>
 
-        <ScrollArea className="w-full my-4">
+        <ScrollArea className="w-full h-[40rem] my-4">
           <div className="flex space-x-4">
             {formServings.map((s, i) => (
               <div key={i} className="w-80">
