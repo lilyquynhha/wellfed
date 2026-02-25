@@ -38,7 +38,7 @@ export function MacroChart({
     protein: number;
     fat: number;
   };
-  size?: number;
+  size: "sm" | "md";
   className?: string;
 }) {
   if (macros.carbs == 0 && macros.protein == 0 && macros.fat == 0) {
@@ -54,7 +54,10 @@ export function MacroChart({
   return (
     <ChartContainer
       config={chartConfig}
-      className={cn(`mx-auto aspect-square max-h-${size}`, className)}
+      className={cn(
+        `mx-auto aspect-square ${size == "sm" && "max-h-36"} ${size == "md" && "max-h-40"}`,
+        className,
+      )}
     >
       <PieChart>
         <ChartTooltip
@@ -65,7 +68,7 @@ export function MacroChart({
           data={chartData}
           dataKey="amount"
           nameKey="macro"
-          innerRadius={size ? (5 * size) / 4 : 40}
+          innerRadius={size == "sm" ? 45 : 50}
           strokeWidth={5}
         >
           <Label

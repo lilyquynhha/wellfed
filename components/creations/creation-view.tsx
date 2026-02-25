@@ -90,7 +90,7 @@ export function CreationView({
               protein: calcTotal("protein"),
               fat: calcTotal("fat"),
             }}
-            size={40}
+            size="md"
           />
         )}
       </div>

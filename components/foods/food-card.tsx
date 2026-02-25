@@ -138,11 +138,9 @@ export function FoodCard({
         <div>
           {serving && (
             <>
-              {resolveAmount(
-                serving.calories,
-                serving.display_serving_size,
-                amount,
-              ) != 0 ? (
+              {serving.carbs != 0 ||
+              serving.protein != 0 ||
+              serving.fat != 0 ? (
                 <MacroChart
                   macros={{
                     calories: resolveAmount(
@@ -166,13 +164,21 @@ export function FoodCard({
                       amount,
                     ) as number,
                   }}
-                  size={36}
+                  size="sm"
                 />
               ) : (
                 <>
                   <div className="flex justify-between items-end mt-2">
                     <p className="text-2xl font-extrabold">Calories</p>
-                    <p className="text-5xl font-extrabold">0</p>
+                    <p className="text-5xl font-extrabold">
+                      {displayNumber(
+                        resolveAmount(
+                          serving.calories,
+                          serving.display_serving_size,
+                          amount,
+                        ),
+                      )}
+                    </p>
                   </div>
 
                   <div className="h-2 bg-primary mt-2 mb-3"></div>
