@@ -73,12 +73,12 @@ function mapToFoodAndServings(res: FatsecretFoodRes): NewFood {
     const convertedFat = toNumber(serving.fat);
 
     if (
-      !convertedServingSize ||
-      !convertedDisplayServingSize ||
-      !convertedCalories ||
-      !convertedCarbs ||
-      !convertedProtein ||
-      !convertedFat
+      convertedServingSize == null ||
+      convertedDisplayServingSize == null ||
+      convertedCalories == null ||
+      convertedCarbs == null ||
+      convertedProtein == null ||
+      convertedFat == null
     ) {
       throw "Missing required field(s).";
     }
