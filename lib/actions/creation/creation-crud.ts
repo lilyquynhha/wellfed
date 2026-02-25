@@ -10,7 +10,7 @@ export type FullIngr = {
 };
 
 export type Ingr = {
-  creationId: string,
+  creationId: string;
   food: spFood;
   serving: spServing;
   amount: number;
@@ -52,8 +52,8 @@ export async function insertCreation(
       .select()
       .eq("is_public", true)
       .is("deleted_at", null)
-      .eq("name", name)
-      .eq("type", type.toUpperCase());
+      .ilike("name", name.trim())
+      .eq("type", type);
 
     if (error)
       return "Supabase error: Failed to check for duplicate creations.";
@@ -66,8 +66,8 @@ export async function insertCreation(
       .eq("owner_user_id", user.id)
       .eq("is_public", false)
       .is("deleted_at", null)
-      .eq("name", name)
-      .eq("type", type.toUpperCase());
+      .ilike("name", name.trim())
+      .eq("type", type);
 
     if (error)
       return "Supabase error: Failed to check for duplicate creations.";

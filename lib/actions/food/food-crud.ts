@@ -178,6 +178,14 @@ export async function insertFood(
     };
   }
 
+  // Check: Food name must not be empty
+  if (!food.name) {
+    return {
+      success: false,
+      errorMessage: "Error: Missing food name.",
+    };
+  }
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -204,16 +212,15 @@ export async function insertFood(
 
   const { is_admin: isAdmin } = data as { is_admin: boolean };
 
-  // check if food already exists
+  // Check: Food name and brand name must not be duplicate
   if (isAdmin) {
     const { data: publicFood, error: foodSelectError } = await supabase
       .from("foods")
       .select("id")
       .eq("is_public", true)
       .is("deleted_at", null)
-      .eq("name", food.name)
-      .eq("type", food.brand_name ? "BRAND" : "GENERIC")
-      .eq("brand_name", food.brand_name);
+      .ilike("name", food.name.trim())
+      .ilike("brand_name", food.brand_name.trim());
 
     if (foodSelectError) {
       return {
@@ -235,9 +242,8 @@ export async function insertFood(
       .eq("owner_user_id", user.id)
       .eq("is_public", false)
       .is("deleted_at", null)
-      .eq("name", food.name)
-      .eq("type", food.brand_name ? "BRAND" : "GENERIC")
-      .eq("brand_name", food.brand_name);
+      .ilike("name", food.name.trim())
+      .ilike("brand_name", food.brand_name.trim());
 
     if (foodSelectError) {
       return {
@@ -250,6 +256,22 @@ export async function insertFood(
         success: false,
         errorMessage:
           "Error: Another private food with the same name and brand name already exists.",
+      };
+    }
+  }
+
+  // Check: Serving size must be positive and display serving unit must not be empty
+  for (const s of servings) {
+    if (s.serving_size <= 0 || s.display_serving_size <= 0) {
+      return {
+        success: false,
+        errorMessage: "Error: Serving size must be positive.",
+      };
+    }
+    if (!s.display_serving_unit) {
+      return {
+        success: false,
+        errorMessage: "Error: Display serving unit must not be empty.",
       };
     }
   }
@@ -276,64 +298,54 @@ export async function insertFood(
   }
 
   // Insert servings
-  try {
-    const { error: servingInsertError } = await supabase
-      .from("servings")
-      .insert(
-        servings.map((s) => ({
-          owner_food_id: insertedFood.id,
-          serving_unit: s.serving_unit,
-          serving_size: s.serving_size,
-          display_serving_unit: s.display_serving_unit,
-          display_serving_size: s.display_serving_size,
-          cost: s.cost,
-          calories: s.calories,
-          carbs: s.carbs,
-          protein: s.protein,
-          fat: s.fat,
-          saturated_fat: s.saturated_fat,
-          polyunsaturated_fat: s.polyunsaturated_fat,
-          monounsaturated_fat: s.monounsaturated_fat,
-          trans_fat: s.trans_fat,
-          cholesterol: s.cholesterol,
-          fiber: s.fiber,
-          sugar: s.sugar,
-          added_sugars: s.added_sugars,
-          sodium: s.sodium,
-          potassium: s.potassium,
-          vitamin_a: s.vitamin_a,
-          vitamin_c: s.vitamin_c,
-          vitamin_d: s.vitamin_d,
-          calcium: s.calcium,
-          iron: s.iron,
+  const { error: servingInsertError } = await supabase.from("servings").insert(
+    servings.map((s) => ({
+      owner_food_id: insertedFood.id,
+      serving_unit: s.serving_unit,
+      serving_size: s.serving_size,
+      display_serving_unit: s.display_serving_unit,
+      display_serving_size: s.display_serving_size,
+      cost: s.cost,
+      calories: s.calories,
+      carbs: s.carbs,
+      protein: s.protein,
+      fat: s.fat,
+      saturated_fat: s.saturated_fat,
+      polyunsaturated_fat: s.polyunsaturated_fat,
+      monounsaturated_fat: s.monounsaturated_fat,
+      trans_fat: s.trans_fat,
+      cholesterol: s.cholesterol,
+      fiber: s.fiber,
+      sugar: s.sugar,
+      added_sugars: s.added_sugars,
+      sodium: s.sodium,
+      potassium: s.potassium,
+      vitamin_a: s.vitamin_a,
+      vitamin_c: s.vitamin_c,
+      vitamin_d: s.vitamin_d,
+      calcium: s.calcium,
+      iron: s.iron,
 
-          updated_at: new Date().toISOString(),
-        })),
-      );
+      updated_at: new Date().toISOString(),
+    })),
+  );
 
-    // Rollback food insert if servings insert fails
-    if (servingInsertError) {
-      const { error: foodDeleteError } = await supabase
-        .from("foods")
-        .delete()
-        .eq("id", insertedFood.id);
+  // Rollback food insert if servings insert fails
+  if (servingInsertError) {
+    const { error: foodDeleteError } = await supabase
+      .from("foods")
+      .delete()
+      .eq("id", insertedFood.id);
 
-      if (foodDeleteError) {
-        return {
-          success: false,
-          errorMessage: `Error inserting servings and deleting inserted food: ${foodDeleteError.message}`,
-        };
-      }
-
+    if (foodDeleteError) {
       return {
         success: false,
-        errorMessage: `Error inserting servings: ${servingInsertError.message}`,
+        errorMessage: `Error inserting servings and deleting inserted food: ${foodDeleteError.message}`,
       };
     }
-  } catch (e) {
     return {
       success: false,
-      errorMessage: `${e}`,
+      errorMessage: `Error inserting servings: ${servingInsertError.message}`,
     };
   }
 
