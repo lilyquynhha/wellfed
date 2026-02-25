@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Heading size={1} text="Settings" className="mb-8" />
-      <Suspense>{children}</Suspense>
+      <Suspense fallback="Loading account settings...">{children}</Suspense>
     </>
   );
 }
