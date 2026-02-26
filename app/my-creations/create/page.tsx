@@ -38,8 +38,8 @@ export default function Page() {
     );
     setError(response);
     if (!response) {
-      toast.success("Creation added successfully!", {
-        position: "top-center",
+      toast.success(`${creationType} created successfully!`, {
+        position: "bottom-center",
       });
     }
     setIsInserting(false);

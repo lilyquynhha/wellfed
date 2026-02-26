@@ -184,7 +184,24 @@ export function FoodCard({
                   <div className="h-2 bg-primary mt-2 mb-3"></div>
                 </>
               )}
-
+              {serving.cost && (
+                <>
+                  <div className="flex space-x-4">
+                    <p className="font-extrabold">Cost</p>
+                    <p>
+                      {displayNumber(
+                        resolveAmount(
+                          serving.cost,
+                          serving.display_serving_size,
+                          amount,
+                        ),
+                        " AUD",
+                      )}
+                    </p>
+                  </div>
+                  <Separator />
+                </>
+              )}
               <div className="flex space-x-4">
                 <p className="font-extrabold">Total Fat</p>
                 <p>

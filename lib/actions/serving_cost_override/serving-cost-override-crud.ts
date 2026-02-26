@@ -16,7 +16,8 @@ export async function insertServingCostOverride(
     data: { user },
   } = await supabase.auth.getUser();
 
-  servings.map(async (s) => {
+  // perform each db operation and wait for all to complete before returning
+  const ops = servings.map(async (s) => {
     const formValue = formData.get(s.id);
 
     const { data } = await supabase
@@ -31,11 +32,7 @@ export async function insertServingCostOverride(
         .from("serving_cost_overrides")
         .delete()
         .eq("serving_id", s.id);
-      if (error)
-        return {
-          success: false,
-          message: error.message,
-        };
+      if (error) throw new Error(error.message);
     }
     // Update cost override if exists and new value is a number
     else if (data && formValue) {
@@ -46,11 +43,7 @@ export async function insertServingCostOverride(
           updated_at: new Date().toISOString(),
         })
         .eq("serving_id", s.id);
-      if (error)
-        return {
-          success: false,
-          message: error.message,
-        };
+      if (error) throw new Error(error.message);
     }
     // Add cost override if doesn't exist and new value is a number
     else if (!data && formValue) {
@@ -60,13 +53,18 @@ export async function insertServingCostOverride(
         cost: formData.get(s.id),
         updated_at: new Date().toISOString(),
       });
-      if (error)
-        return {
-          success: false,
-          message: error.message,
-        };
+      if (error) throw new Error(error.message);
     }
   });
+
+  try {
+    await Promise.all(ops);
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err.message,
+    };
+  }
 
   return {
     success: true,

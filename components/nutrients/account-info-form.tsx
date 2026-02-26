@@ -94,7 +94,7 @@ export default function AccountInfoForm({
   useEffect(() => {
     if (insertState.message != lastUpdate) {
       toast.success("Account updated successfully!", {
-        position: "top-center",
+        position: "bottom-center",
       });
       setLastUpdate(insertState.message);
       setUpdatedTracked(insertState.insertedData);

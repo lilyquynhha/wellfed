@@ -45,7 +45,7 @@ export default function Page() {
       });
     }
     toast.success("Food added to Favourite!", {
-      position: "top-center",
+      position: "bottom-center",
     });
   };
 

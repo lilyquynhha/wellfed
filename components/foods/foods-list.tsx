@@ -15,6 +15,8 @@ import {
 } from "../ui/dialog";
 import { FoodCard } from "./food-card";
 import { FoodCardSkeleton } from "../ui/skeleton";
+import { Star } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function FoodsList({
   foods,
@@ -31,6 +33,7 @@ export default function FoodsList({
   setPage: (page: number) => void;
   onSelect: (food: spFood) => void;
 }) {
+  const pathname = usePathname();
   const [chosenFood, setChosenFood] = useState<string | null>(null);
 
   return (
@@ -49,7 +52,17 @@ export default function FoodsList({
               >
                 <CardContent className="flex justify-between">
                   <div>
-                    <p className="font-medium">{f.name}</p>
+                    <div className="flex gap-2 items-center">
+                      <p className="font-medium">{f.name}</p>
+                      {pathname != "/" && f.is_public && (
+                        <Star
+                          size={15}
+                          fill="hsl(var(--primary))"
+                          strokeWidth={0}
+                        />
+                      )}
+                    </div>
+
                     <p className="text-sm text-muted-foreground">
                       {f.brand_name}
                     </p>

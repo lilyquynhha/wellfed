@@ -59,7 +59,7 @@ export default function Page({
     setError(response);
     if (!response) {
       toast.success("Creation updated successfully!", {
-        position: "top-center",
+        position: "bottom-right",
       });
     }
     setIsUpdating(false);
@@ -185,7 +185,7 @@ export default function Page({
           {error && <p className="text-red-500 mt-2">{error}</p>}
         </>
       ) : (
-        <p>Loading creation...</p>
+        <p>Loading creation details...</p>
       )}
     </>
   );

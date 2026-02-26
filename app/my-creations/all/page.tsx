@@ -61,7 +61,7 @@ export default function Page() {
     setTriggerSearch(!triggerSearch);
 
     toast.success("Creation deleted successfully", {
-      position: "top-center",
+      position: "bottom-center",
     });
   };
 

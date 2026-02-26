@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { MAX_RESULTS } from "@/lib/actions/food/food-crud";
 import {
   NewIngr,
+  spCostOverride,
   spCreation,
   spFood,
   spServing,
@@ -24,6 +25,7 @@ export function FoodSearchResult({
   setPage,
   onSelectedFood,
   onSelectedFoodServings,
+  newCostOverrides,
   addIngr,
 }: {
   foods: spFood[];
@@ -32,6 +34,7 @@ export function FoodSearchResult({
   setPage: (page: number) => void;
   onSelectedFood: (food: spFood) => void;
   onSelectedFoodServings?: (servings: spServing[]) => void;
+  newCostOverrides?: spCostOverride[];
   addIngr?: (i: NewIngr) => void;
 }) {
   const supabase = createClient();
@@ -66,7 +69,29 @@ export function FoodSearchResult({
         return [];
       }
 
-      return data as spServing[];
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const fetchedServings = data as spServing[];
+      await Promise.all(
+        fetchedServings.map(async (s) => {
+          if (s.owner_food_id == selectedFood?.id) {
+            const { data: fetchedOverride } = await supabase
+              .from("serving_cost_overrides")
+              .select()
+              .eq("serving_id", s.id)
+              .eq("user_id", user?.id)
+              .maybeSingle();
+
+            if (fetchedOverride) {
+              s.cost = (fetchedOverride as spCostOverride).cost;
+            }
+          }
+        }),
+      );
+
+      return fetchedServings;
     }
 
     getServings().then((res) => {
@@ -74,6 +99,22 @@ export function FoodSearchResult({
       if (onSelectedFoodServings) onSelectedFoodServings(res);
     });
   }, [selectedFood]);
+
+  // Update cost overrides
+  useEffect(() => {
+    if (!newCostOverrides) return;
+    const updatedServings = [...selectedServings];
+    updatedServings.map((s) => {
+      const foundOverride = newCostOverrides.find((o) => o.serving_id == s.id);
+      if (foundOverride) {
+        s.cost = foundOverride.cost;
+      } else {
+        s.cost = null;
+      }
+    });
+    setSelectedServings(updatedServings);
+    if (onSelectedFoodServings) onSelectedFoodServings(updatedServings);
+  }, [newCostOverrides]);
 
   // Reset selected food if it is a new food search
   if (foods != currentFoods) {

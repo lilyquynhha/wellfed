@@ -60,8 +60,8 @@ export default function Page() {
 
   useEffect(() => {
     if (insertState.success) {
-      toast.success("Food added successfully!", {
-        position: "top-center",
+      toast.success("Food created successfully!", {
+        position: "bottom-center",
       });
 
       setInsertState(initialInsertState);

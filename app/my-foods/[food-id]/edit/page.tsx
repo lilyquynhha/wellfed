@@ -116,4 +116,7 @@ export default function Page({
         )}
       </>
     );
+  else {
+    return <p>Loading food details...</p>;
+  }
 }

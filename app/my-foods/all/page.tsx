@@ -43,6 +43,8 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { insertServingCostOverride } from "@/lib/actions/serving_cost_override/serving-cost-override-crud";
+import { Separator } from "@/components/ui/separator";
+import { stopCoverageInsideWorker } from "vitest/internal/browser";
 
 export default function Page() {
   const supabase = createClient();
@@ -130,7 +132,7 @@ export default function Page() {
     setTriggerSearch(!triggerSearch);
 
     toast.success("Food deleted successfully", {
-      position: "top-center",
+      position: "bottom-center",
     });
   };
 
@@ -140,37 +142,12 @@ export default function Page() {
     const updatedFoods = new Array(...compareFoods);
     updatedFoods.push(selectedFood);
 
-    const { data } = await supabase
-      .from("servings")
-      .select()
-      .eq("owner_food_id", selectedFood.id);
-
-    const addedServings = data as spServing[];
     const updatedServings = new Array(...compareServings);
-    updatedServings.push(...addedServings);
+    updatedServings.push(...selectedFoodServings);
 
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
-    // Get serving cost overrides (if any)
-    await Promise.all(
-      updatedServings.map(async (s, i) => {
-        if (s.owner_food_id == selectedFood.id) {
-          const { data: fetchedOverride } = await supabase
-            .from("serving_cost_overrides")
-            .select()
-            .eq("serving_id", s.id)
-            .eq("user_id", user?.id)
-            .maybeSingle();
-
-          if (fetchedOverride) {
-            updatedServings[i].cost = (fetchedOverride as spCostOverride).cost;
-          }
-        }
-      }),
-    );
-
     setCompareFoods(updatedFoods);
     setCompareServings(updatedServings);
   };
@@ -253,8 +230,10 @@ export default function Page() {
 
   useEffect(() => {
     if (addCostRes.success && lastAdd != addCostRes.message) {
+      fetchCostOverrides();
+
       toast.success("Cost added successfully!", {
-        position: "top-center",
+        position: "bottom-center",
       });
       setLastAdd(addCostRes.message as string);
       setOpen(false);
@@ -287,20 +266,20 @@ export default function Page() {
                 <Button
                   size="sm"
                   variant="secondary"
-                  disabled={isLoading}
+                  disabled={isLoading || !selectedFood.is_public}
                   onClick={async () => {
                     await fetchCostOverrides();
                   }}
                 >
-                  Add cost
+                  Override cost
                 </Button>
               </DialogTrigger>
 
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Add cost</DialogTitle>
+                  <DialogTitle>Override cost</DialogTitle>
                   <DialogDescription>
-                    Add cost to be used for the respective servings
+                    Override cost of public foods
                   </DialogDescription>
                 </DialogHeader>
                 {!isFetchingCost ? (
@@ -325,21 +304,27 @@ export default function Page() {
                           </Field>
                         ))}
 
-                        <Button
-                          type="submit"
-                          disabled={isAdding}
-                          className="sticky bottom-0"
-                        >
-                          Add cost
-                        </Button>
+                        <div className="sticky bottom-0 bg-background">
+                          <Button
+                            type="submit"
+                            disabled={isAdding}
+                            className="w-full"
+                          >
+                            Update cost
+                          </Button>
+                        </div>
                       </FieldGroup>
                     </div>
                   </form>
                 ) : (
-                  <p>Fetching cost...</p>
+                  <p>Fetching existing cost overrides...</p>
                 )}
               </DialogContent>
             </Dialog>
+
+            <div>
+              <Separator orientation="vertical" />
+            </div>
 
             <Button
               size="sm"
@@ -379,6 +364,10 @@ export default function Page() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+
+            <div>
+              <Separator orientation="vertical" />
+            </div>
 
             <Button
               size="sm"
@@ -422,6 +411,7 @@ export default function Page() {
           setPage={setPage}
           onSelectedFood={setSelectedFood}
           onSelectedFoodServings={setSelectedFoodServings}
+          newCostOverrides={costOverrides}
         />
       )}
 
