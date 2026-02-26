@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Heading size={1} text="Account Setup" className="mb-10" />
-      <Suspense>{children}</Suspense>
+      <Suspense fallback="Setting up your account...">{children}</Suspense>
     </>
   );
 }
