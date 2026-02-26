@@ -26,6 +26,7 @@ export default async function Page() {
   return (
     <>
       <AccountInfoForm
+        user={user}
         profile={profile}
         nutrients={nutrients}
         trackedNutrients={trackedNutrients}

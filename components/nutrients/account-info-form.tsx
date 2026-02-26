@@ -26,11 +26,13 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 export default function AccountInfoForm({
   nutrients,
+  user,
   profile,
   trackedNutrients,
   redirect,
 }: {
   nutrients: spNutrient[];
+  user: User;
   profile?: spProfile;
   trackedNutrients?: spTrackedNutrient[];
   redirect?: string;
@@ -74,11 +76,7 @@ export default function AccountInfoForm({
     if (!username.username) return;
 
     async function validateUsername() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (await isUsernameUnique(user as User, username.username)) {
+      if (await isUsernameUnique(user, username.username)) {
         setUsername((prev) => ({ ...prev, isUnique: true }));
       } else {
         setUsername((prev) => ({ ...prev, isUnique: false }));
@@ -107,6 +105,17 @@ export default function AccountInfoForm({
     <div>
       {nutrients && (
         <form action={insertAction}>
+          <Field className="flex flex-row flex-wrap items-center mb-2">
+            <FieldLabel className="max-w-fit">Email:</FieldLabel>
+            <Input
+              value={user.email}
+              id="email"
+              name="email"
+              className="max-w-52"
+              type="text"
+              disabled
+            />
+          </Field>
           <Field className="flex flex-row flex-wrap items-center mb-2">
             <FieldLabel className="max-w-fit">Username:</FieldLabel>
             <Input
