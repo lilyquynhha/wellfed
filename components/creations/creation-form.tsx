@@ -42,6 +42,7 @@ import {
 import { FullIngr } from "@/lib/actions/creation/creation-crud";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { Heading } from "../typography";
+import { MacroChart } from "../visuals/macro-chart";
 
 export default function CreationForm({
   nutrients,
@@ -287,120 +288,133 @@ export default function CreationForm({
       </Collapsible>
 
       <div className="mt-4">
-        <Heading size={3} text="Added ingredients" className="mb-3"/>
+        <Heading size={3} text="Added ingredients" className="mb-3" />
         {ingrs.length > 0 ? (
-          <div className="flex">
-            <ScrollArea className="w-full max-h-96 border-2 border-muted rounded-xl">
-              <div className="sticky top-0 z-40 border-foreground bg-secondary mb-2">
-                <div className="flex flex-col">
-                  <div className="sticky top-0 border-b-2 border-foreground">
-                    <div className="flex gap-2 p-2 font-semibold">
-                      <p className="w-48 break-words">Ingredient</p>
-                      <p className="w-36 break-words">Amount</p>
-                      <p className="w-24 break-words">Cost</p>
-                      {nutrients.map((n) => (
-                        <p
-                          key={`${n.id}-name`}
-                          className={`w-24 break-words ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
-                        >
-                          {" "}
-                          {n.name}
-                        </p>
-                      ))}
+          <>
+            {calcTotal("calories") != 0 && (
+              <MacroChart
+                macros={{
+                  calories: calcTotal("calories"),
+                  carbs: calcTotal("carbs"),
+                  protein: calcTotal("protein"),
+                  fat: calcTotal("fat"),
+                }}
+                size="md"
+              />
+            )}
+            <div className="flex">
+              <ScrollArea className="w-full max-h-96 border-2 border-muted rounded-xl">
+                <div className="sticky top-0 z-40 border-foreground bg-secondary mb-2">
+                  <div className="flex flex-col">
+                    <div className="sticky top-0 border-b-2 border-foreground">
+                      <div className="flex gap-2 p-2 font-semibold">
+                        <p className="w-48 break-words">Ingredient</p>
+                        <p className="w-36 break-words">Amount</p>
+                        <p className="w-24 break-words">Cost</p>
+                        {nutrients.map((n) => (
+                          <p
+                            key={`${n.id}-name`}
+                            className={`w-24 break-words ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
+                          >
+                            {" "}
+                            {n.name}
+                          </p>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              {ingrs.map((i) => (
-                <div key={`${i.ingr.serving_id}-${i.ingr.amount}`}>
-                  <div className="flex mb-2 gap-2 pl-2 pb-2 border-b-2">
-                    <div className="sticky left-0 w-48 bg-background">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="size-6 float-right mr-2"
-                        onClick={() => {
-                          deleteIngr(i);
-                        }}
-                      >
-                        <Trash2 size={16} />
-                      </Button>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-6 float-right mr-2"
-                          >
-                            <Pencil size={16} />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent aria-describedby={undefined}>
-                          <DialogHeader>
-                            <DialogTitle>Edit Ingredient</DialogTitle>
-                          </DialogHeader>
-
-                          <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto">
-                            <FoodCard
-                              food={i.food}
-                              servings={i.servings}
-                              addIngr={(newIngr) => {
-                                editIngr(i, newIngr);
-                              }}
-                            />
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      <p className="font-medium">{i.food.name}</p>
-                    </div>
-                    <div className="w-36">
-                      <p>
-                        {`${i.ingr.amount} ${i.servings.find((s) => s.id == i.ingr.serving_id)?.display_serving_unit}`}
-                      </p>
-                    </div>
-                    <div className="w-24">
-                      <p>{displayNumber(calcAmount(i, "cost"))}</p>
-                    </div>
-                    {nutrients.map((n) => (
-                      <div key={`${n.id}-each`} className="w-24">
-                        <p
-                          className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
+                {ingrs.map((i) => (
+                  <div key={`${i.ingr.serving_id}-${i.ingr.amount}`}>
+                    <div className="flex mb-2 gap-2 pl-2 pb-2 border-b-2">
+                      <div className="sticky left-0 w-48 bg-background">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="size-6 float-right mr-2"
+                          onClick={() => {
+                            deleteIngr(i);
+                          }}
                         >
-                          {displayNumber(
-                            calcAmount(i, n.serving_name as keyof spServing),
-                          )}
+                          <Trash2 size={16} />
+                        </Button>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-6 float-right mr-2"
+                            >
+                              <Pencil size={16} />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent aria-describedby={undefined}>
+                            <DialogHeader>
+                              <DialogTitle>Edit Ingredient</DialogTitle>
+                            </DialogHeader>
+
+                            <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto">
+                              <FoodCard
+                                food={i.food}
+                                servings={i.servings}
+                                addIngr={(newIngr) => {
+                                  editIngr(i, newIngr);
+                                }}
+                              />
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                        <p className="font-medium">{i.food.name}</p>
+                      </div>
+                      <div className="w-36">
+                        <p>
+                          {`${i.ingr.amount} ${i.servings.find((s) => s.id == i.ingr.serving_id)?.display_serving_unit}`}
                         </p>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              <div className="sticky bottom-0 z-40 border-foreground bg-secondary mb-2">
-                <div className="flex flex-col whitespace-nowrap">
-                  <div className="sticky bottom-0">
-                    <div className="flex gap-2 p-2 font-semibold">
-                      <p className="w-[21.5rem] text-right pr-6">Total</p>
-                      <p className="w-24">
-                        {displayNumber(calcTotal("cost"), " AUD")}
-                      </p>
+                      <div className="w-24">
+                        <p>{displayNumber(calcAmount(i, "cost"))}</p>
+                      </div>
                       {nutrients.map((n) => (
-                        <p
-                          key={`${n.id}-total`}
-                          className={`w-24 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
-                        >
-                          {displayNumber(
-                            calcTotal(n.serving_name as keyof spServing),
-                            n.unit,
-                          )}
-                        </p>
+                        <div key={`${n.id}-each`} className="w-24">
+                          <p
+                            className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
+                          >
+                            {displayNumber(
+                              calcAmount(i, n.serving_name as keyof spServing),
+                            )}
+                          </p>
+                        </div>
                       ))}
                     </div>
                   </div>
+                ))}
+                <div className="sticky bottom-0 z-40 border-foreground bg-secondary mb-2">
+                  <div className="flex flex-col whitespace-nowrap">
+                    <div className="sticky bottom-0">
+                      <div className="flex gap-2 p-2 font-semibold">
+                        <p className="w-[21.5rem] text-right pr-6">Total</p>
+                        <p className="w-24">
+                          {displayNumber(calcTotal("cost"), " AUD")}
+                        </p>
+                        {nutrients.map((n) => (
+                          <p
+                            key={`${n.id}-total`}
+                            className={`w-24 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
+                          >
+                            {displayNumber(
+                              calcTotal(n.serving_name as keyof spServing),
+                              n.unit,
+                            )}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-          </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
+          </>
         ) : (
           <p>Search foods above to add ingredients.</p>
         )}
