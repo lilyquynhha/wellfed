@@ -27,7 +27,7 @@ export default function Page() {
 
   const handleFavouriteFood = async (f: spFood) => {
     if (!user) {
-      router.push("/auth/sign-up");
+      router.push("/auth/login");
       return;
     }
 
