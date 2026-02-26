@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/my-foods";
+  const next = searchParams.get("next") ?? "/my-foods/all";
 
   if (!code) {
     redirect("/auth/error?error=Missing code");
