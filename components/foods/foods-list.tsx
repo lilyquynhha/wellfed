@@ -15,7 +15,7 @@ import {
 } from "../ui/dialog";
 import { FoodCard } from "./food-card";
 import { FoodCardSkeleton } from "../ui/skeleton";
-import { Star } from "lucide-react";
+import { ChevronsRight, Star } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 export default function FoodsList({
@@ -72,9 +72,10 @@ export default function FoodsList({
                       <DialogTrigger asChild>
                         <Button
                           variant="ghost"
-                          className="italic text-muted-foreground"
+                          size="icon"
+                          className="text-muted-foreground"
                         >
-                          Click to view details
+                          <ChevronsRight />
                         </Button>
                       </DialogTrigger>
                       <DialogContent aria-describedby={undefined}>

@@ -250,124 +250,132 @@ export default function Page() {
       {/* Food actions */}
       {totalResults > 0 && selectedFood && (
         <>
-          <div className="flex gap-2 justify-end my-2">
-            <Button
-              size="sm"
-              variant="secondary"
-              disabled={isLoading || !selectedFood.is_public}
-              onClick={() => {
-                handleUnfavouriteFood();
-              }}
-            >
-              Unfavourite
-            </Button>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
+          <div className="flex gap-2 justify-end my-2 overflow-x-auto">
+            {selectedFood.is_public && (
+              <>
                 <Button
                   size="sm"
                   variant="secondary"
                   disabled={isLoading || !selectedFood.is_public}
-                  onClick={async () => {
-                    await fetchCostOverrides();
+                  onClick={() => {
+                    handleUnfavouriteFood();
                   }}
                 >
-                  Override cost
+                  Unfavourite
                 </Button>
-              </DialogTrigger>
+                <Dialog open={open} onOpenChange={setOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      disabled={isLoading || !selectedFood.is_public}
+                      onClick={async () => {
+                        await fetchCostOverrides();
+                      }}
+                    >
+                      Override cost
+                    </Button>
+                  </DialogTrigger>
 
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Override cost</DialogTitle>
-                  <DialogDescription>
-                    Override cost of public foods
-                  </DialogDescription>
-                </DialogHeader>
-                {!isFetchingCost ? (
-                  <form action={addCost}>
-                    <div className="max-h-[50vh] overflow-y-auto">
-                      <FieldGroup className="gap-2">
-                        {selectedFoodServings.map((s) => (
-                          <Field key={s.id} className="flex flex-row">
-                            <Input
-                              defaultValue={
-                                costOverrides.find((o) => o.serving_id == s.id)
-                                  ?.cost
-                              }
-                              id={s.id}
-                              name={s.id}
-                              className="max-w-36"
-                              type="number"
-                              step="any"
-                              min="0"
-                            />
-                            <FieldLabel>{`per ${s.display_serving_size} ${s.display_serving_unit}`}</FieldLabel>
-                          </Field>
-                        ))}
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Override cost</DialogTitle>
+                      <DialogDescription>
+                        Override cost of public foods
+                      </DialogDescription>
+                    </DialogHeader>
+                    {!isFetchingCost ? (
+                      <form action={addCost}>
+                        <div className="max-h-[50vh] overflow-y-auto">
+                          <FieldGroup className="gap-2">
+                            {selectedFoodServings.map((s) => (
+                              <Field key={s.id} className="flex flex-row">
+                                <Input
+                                  defaultValue={
+                                    costOverrides.find(
+                                      (o) => o.serving_id == s.id,
+                                    )?.cost
+                                  }
+                                  id={s.id}
+                                  name={s.id}
+                                  className="max-w-36"
+                                  type="number"
+                                  step="any"
+                                  min="0"
+                                />
+                                <FieldLabel>{`per ${s.display_serving_size} ${s.display_serving_unit}`}</FieldLabel>
+                              </Field>
+                            ))}
 
-                        <div className="sticky bottom-0 bg-background">
-                          <Button
-                            type="submit"
-                            disabled={isAdding}
-                            className="w-full"
-                          >
-                            Update cost
-                          </Button>
+                            <div className="sticky bottom-0 bg-background">
+                              <Button
+                                type="submit"
+                                disabled={isAdding}
+                                className="w-full"
+                              >
+                                Update cost
+                              </Button>
+                            </div>
+                          </FieldGroup>
                         </div>
-                      </FieldGroup>
-                    </div>
-                  </form>
-                ) : (
-                  <p>Fetching existing cost overrides...</p>
-                )}
-              </DialogContent>
-            </Dialog>
+                      </form>
+                    ) : (
+                      <p>Fetching existing cost overrides...</p>
+                    )}
+                  </DialogContent>
+                </Dialog>
 
-            <div>
-              <Separator orientation="vertical" />
-            </div>
+                <div>
+                  <Separator orientation="vertical" />
+                </div>
+              </>
+            )}
 
-            <Button
-              size="sm"
-              variant="secondary"
-              disabled={isLoading || selectedFood.is_public}
-            >
-              <Link href={`/my-foods/${selectedFood.id}/edit`}>Edit</Link>
-            </Button>
-
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
+            {!selectedFood.is_public && (
+              <>
                 <Button
-                  disabled={isLoading || selectedFood.is_public}
                   size="sm"
                   variant="secondary"
+                  disabled={isLoading || selectedFood.is_public}
                 >
-                  Delete
+                  <Link href={`/my-foods/${selectedFood.id}/edit`}>Edit</Link>
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete food?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will permanently delete the food.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    variant="destructive"
-                    onClick={() => {
-                      handleDeleteFood();
-                    }}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      disabled={isLoading || selectedFood.is_public}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete food?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete the food.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        variant="destructive"
+                        onClick={() => {
+                          handleDeleteFood();
+                        }}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
 
-            <div>
-              <Separator orientation="vertical" />
-            </div>
+                <div>
+                  <Separator orientation="vertical" />
+                </div>
+              </>
+            )}
 
             <Button
               size="sm"
