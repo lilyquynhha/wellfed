@@ -64,6 +64,7 @@ export default function Page() {
   const [selectedFoodServings, setSelectedFoodServings] = useState<spServing[]>(
     [],
   );
+  const [isServingsFetched, setIsServingsFetched] = useState(false);
   const [triggerSearch, setTriggerSearch] = useState(false); // a toggle
 
   // Serving cost overrides
@@ -136,18 +137,16 @@ export default function Page() {
     });
   };
 
-  const addFoodToCompare = async () => {
+  const addFoodToCompare = () => {
     if (!selectedFood) return;
     if (compareFoods.find((f) => f.id === selectedFood.id)) return;
+
     const updatedFoods = new Array(...compareFoods);
     updatedFoods.push(selectedFood);
 
     const updatedServings = new Array(...compareServings);
     updatedServings.push(...selectedFoodServings);
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
     setCompareFoods(updatedFoods);
     setCompareServings(updatedServings);
   };
@@ -228,6 +227,14 @@ export default function Page() {
     fetchFoods();
   }, [triggerSearch, searchQuery, page]);
 
+  // Ensure servings finish fetching for selected food
+  useEffect(() => {
+    if (selectedFoodServings.find((s) => s.owner_food_id == selectedFood?.id))
+      setIsServingsFetched(true);
+    else setIsServingsFetched(false);
+  }, [selectedFood, selectedFoodServings]);
+
+  // Update cost overrides
   useEffect(() => {
     if (addCostRes.success && lastAdd != addCostRes.message) {
       fetchCostOverrides();
@@ -380,7 +387,7 @@ export default function Page() {
             <Button
               size="sm"
               variant="secondary"
-              disabled={isLoading}
+              disabled={isLoading || !isServingsFetched}
               onClick={() => {
                 addFoodToCompare();
               }}
