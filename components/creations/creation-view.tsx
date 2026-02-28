@@ -26,6 +26,7 @@ import { Field } from "../ui/field";
 import { Input } from "../ui/input";
 import { useState } from "react";
 import { MacroChart } from "../visuals/macro-chart";
+import { Separator } from "../ui/separator";
 
 export function CreationView({
   selectedCreation,
@@ -126,6 +127,9 @@ export function CreationView({
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        <div>
+          <Separator orientation="vertical"/>
+        </div>
         <Button variant="secondary" size="sm" onClick={addToCompare}>
           Compare
         </Button>
@@ -134,7 +138,7 @@ export function CreationView({
         <ScrollArea className="w-full max-h-96 border-2 border-muted rounded-xl">
           <div className="sticky top-0 z-40 border-foreground bg-secondary mb-2">
             <div className="flex flex-col">
-              <div className="sticky top-0 border-b-2 border-foreground">
+              <div className="sticky top-0">
                 <div className="flex gap-2 p-2 font-semibold">
                   <p className="w-48 break-words">Ingredient</p>
                   <p className="w-36 break-words">Amount</p>
@@ -154,9 +158,16 @@ export function CreationView({
           {ingrs.map((i) => {
             return (
               <div key={`${i.serving.id}-${i.amount}`}>
-                <div className="flex mb-4 gap-2 pl-2">
-                  <div className="sticky left-0 w-48 bg-background">
+                <div className="md:hidden">
+                  <div className="sticky left-0 max-w-fit pl-2">
                     <p className="font-medium">{i.food.name}</p>
+                    <p className="text-sm text-muted-foreground">{i.food.brand_name}</p>
+                  </div>
+                </div>
+
+                <div className="flex mb-2 md:mb-4 gap-2">
+                  <div className="sticky left-0 w-48">
+                    <p className="hidden md:block font-medium bg-background pl-2">{i.food.name}</p>
                   </div>
                   <div className="w-36">
                     <p>
@@ -164,7 +175,7 @@ export function CreationView({
                     </p>
                   </div>
                   <div className="w-24">
-                    <p>{displayNumber(calcAmount(i, "cost"))}</p>
+                    <p>{displayNumber(calcAmount(i, "cost"), " AUD")}</p>
                   </div>
                   {nutrients.map((n) => (
                     <div key={`${n.id}-value`} className="w-24">
@@ -173,6 +184,7 @@ export function CreationView({
                       >
                         {displayNumber(
                           calcAmount(i, n.serving_name as keyof spServing),
+                          n.unit,
                         )}
                       </p>
                     </div>

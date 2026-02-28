@@ -68,7 +68,7 @@ export function CreationComparison({
       <ScrollArea className="w-full max-h-96 border-2 border-muted rounded-xl">
         <div className="sticky top-0 z-40 border-foreground bg-secondary mb-2">
           <div className="flex flex-col">
-            <div className="sticky top-0 border-b-2 border-foreground">
+            <div className="sticky top-0">
               <div className="flex gap-2 p-2 font-semibold">
                 <p className="w-48 break-words">Creation</p>
                 <p className="w-28 break-words">Serving size</p>
@@ -87,20 +87,39 @@ export function CreationComparison({
         </div>
         {creations.map((c) => (
           <div key={`${c.id}`}>
-            <div className="flex items-center mb-4 gap-2 pl-2">
-              <div className="sticky left-0 w-48 bg-background">
+            <div className="md:hidden">
+              <div className="sticky left-0 flex max-w-fit pl-2">
+                <p className="font-medium">{c.name}</p>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="size-6 float-right mr-2"
+                  className="size-6"
                   onClick={() => {
                     removeCreation(c);
                   }}
                 >
                   <Trash2 size={16} />
                 </Button>
-                <p className="font-medium">{c.name}</p>
               </div>
+            </div>
+
+            <div className="flex items-center mb-2 gap-2">
+              <div className="sticky left-0 w-48 bg-background">
+                <div className="hidden md:block pl-2">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="size-6 float-right mr-2"
+                    onClick={() => {
+                      removeCreation(c);
+                    }}
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                  <p className="font-medium">{c.name}</p>
+                </div>
+              </div>
+
               <div className="w-28">
                 <Field>
                   <Input

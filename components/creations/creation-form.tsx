@@ -304,9 +304,9 @@ export default function CreationForm({
             )}
             <div className="flex">
               <ScrollArea className="w-full max-h-96 border-2 border-muted rounded-xl">
-                <div className="sticky top-0 z-40 border-foreground bg-secondary mb-2">
+                <div className="sticky top-0 z-40 bg-secondary mb-2">
                   <div className="flex flex-col">
-                    <div className="sticky top-0 border-b-2 border-foreground">
+                    <div className="sticky top-0">
                       <div className="flex gap-2 p-2 font-semibold">
                         <p className="w-48 break-words">Ingredient</p>
                         <p className="w-36 break-words">Amount</p>
@@ -326,45 +326,91 @@ export default function CreationForm({
                 </div>
                 {ingrs.map((i) => (
                   <div key={`${i.ingr.serving_id}-${i.ingr.amount}`}>
-                    <div className="flex mb-2 gap-2 pl-2 pb-2 border-b-2">
-                      <div className="sticky left-0 w-48 bg-background">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="size-6 float-right mr-2"
-                          onClick={() => {
-                            deleteIngr(i);
-                          }}
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="size-6 float-right mr-2"
-                            >
-                              <Pencil size={16} />
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent aria-describedby={undefined}>
-                            <DialogHeader>
-                              <DialogTitle>Edit Ingredient</DialogTitle>
-                            </DialogHeader>
+                    <div className="md:hidden">
+                      <div className="sticky left-0 max-w-fit pl-2">
+                        <div className="flex">
+                          {" "}
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-6 float-right mr-2"
+                              >
+                                <Pencil size={16} />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent aria-describedby={undefined}>
+                              <DialogHeader>
+                                <DialogTitle>Edit Ingredient</DialogTitle>
+                              </DialogHeader>
 
-                            <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto">
-                              <FoodCard
-                                food={i.food}
-                                servings={i.servings}
-                                addIngr={(newIngr) => {
-                                  editIngr(i, newIngr);
-                                }}
-                              />
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                        <p className="font-medium">{i.food.name}</p>
+                              <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto">
+                                <FoodCard
+                                  food={i.food}
+                                  servings={i.servings}
+                                  addIngr={(newIngr) => {
+                                    editIngr(i, newIngr);
+                                  }}
+                                />
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="size-6 float-right mr-2"
+                            onClick={() => {
+                              deleteIngr(i);
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                          <p className="font-medium">{i.food.name}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex mb-2 gap-2 pb-2">
+                      <div className="sticky left-0 w-48">
+                        <div className="hidden md:block bg-background">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="size-6 float-right mr-2"
+                            onClick={() => {
+                              deleteIngr(i);
+                            }}
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-6 float-right mr-2"
+                              >
+                                <Pencil size={16} />
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent aria-describedby={undefined}>
+                              <DialogHeader>
+                                <DialogTitle>Edit Ingredient</DialogTitle>
+                              </DialogHeader>
+
+                              <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto">
+                                <FoodCard
+                                  food={i.food}
+                                  servings={i.servings}
+                                  addIngr={(newIngr) => {
+                                    editIngr(i, newIngr);
+                                  }}
+                                />
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                          <p className="font-medium pl-2">{i.food.name}</p>
+                        </div>
                       </div>
                       <div className="w-36">
                         <p>
@@ -372,7 +418,7 @@ export default function CreationForm({
                         </p>
                       </div>
                       <div className="w-24">
-                        <p>{displayNumber(calcAmount(i, "cost"))}</p>
+                        <p>{displayNumber(calcAmount(i, "cost"), " AUD")}</p>
                       </div>
                       {nutrients.map((n) => (
                         <div key={`${n.id}-each`} className="w-24">
@@ -381,6 +427,7 @@ export default function CreationForm({
                           >
                             {displayNumber(
                               calcAmount(i, n.serving_name as keyof spServing),
+                              n.unit,
                             )}
                           </p>
                         </div>

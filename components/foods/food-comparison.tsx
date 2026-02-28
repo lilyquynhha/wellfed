@@ -307,9 +307,9 @@ export default function FoodComparison({
           <div className="flex">
             <ScrollArea className="w-full h-96 border-2 border-muted rounded-xl">
               <div className="flex">
-                <div className="sticky left-0 z-40 border-r-2 border-foreground">
+                <div className="hidden md:block sticky left-0 z-40 border-r-2 border-muted">
                   <div className="flex flex-col w-44 whitespace-nowrap">
-                    <div className="h-20 sticky top-0 border-b-2 border-foreground bg-secondary">
+                    <div className="h-20 sticky top-0 bg-secondary">
                       <p className="px-2 font-semibold">Details</p>
                     </div>
                     <div className="flex items-center h-10 border-b-2 bg-background">
@@ -318,14 +318,14 @@ export default function FoodComparison({
                     <div className="flex items-center h-10 border-b-2 bg-background">
                       <p className="px-2 font-semibold">Serving unit</p>
                     </div>
-                    <div className="flex items-center border-b-2 bg-background">
+                    <div className="flex items-center bg-background">
                       <p className="px-2 font-semibold">Cost</p>
                     </div>
 
                     {nutrients.map((n, i) => (
                       <div
                         key={`${n.id}-name`}
-                        className={`flex items-center border-b-2 ${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
+                        className={`flex items-center ${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
                       >
                         <p
                           className={`px-2 font-semibold ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
@@ -341,7 +341,7 @@ export default function FoodComparison({
                   {foods.map((f) => {
                     return (
                       <div key={f.id} className="w-36">
-                        <div className="h-20 overflow-auto sticky top-0 bg-secondary border-b-2 border-foreground">
+                        <div className="h-20 overflow-auto sticky top-0 bg-secondary">
                           <Button
                             size="icon"
                             variant="ghost"
@@ -424,14 +424,20 @@ export default function FoodComparison({
                           </Select>
                         </div>
 
-                        <div className="border-b-2 border-muted">
-                          <p className="px-2">{`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.cost)}`}</p>
+                        <div className="">
+                          <p className="md:hidden text-sm text-muted-foreground px-2 overflow-hidden">
+                            Cost
+                          </p>
+                          <p className="px-2">{`${displayNumber(computedFoods.find((a) => a.foodId == f.id)?.computedFigures.cost, " AUD")}`}</p>
                         </div>
                         {nutrients.map((n, i) => (
                           <div
                             key={`${n.id}-value`}
-                            className={`border-b-2 ${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
+                            className={`${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
                           >
+                            <p className="md:hidden text-sm text-muted-foreground px-2 text-nowrap overflow-hidden">
+                              {n.name}
+                            </p>
                             <p
                               className={`px-2 ${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                             >{`${displayNumber(
@@ -439,6 +445,7 @@ export default function FoodComparison({
                                 ?.computedFigures[
                                 n.serving_name as keyof ServingFigures
                               ],
+                              n.unit,
                             )}`}</p>
                           </div>
                         ))}

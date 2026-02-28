@@ -12,13 +12,13 @@ export function Heading({
   switch (size) {
     case 1:
       return (
-        <h1 className={cn("text-center text-7xl font-semibold", className)}>
+        <h1 className={cn("text-center text-5xl md:text-7xl font-semibold", className)}>
           {text}
         </h1>
       );
     case 2:
       return (
-        <h2 className={cn("text-4xl font-semibold", className)}>{text}</h2>
+        <h2 className={cn("text-3xl md:text-4xl font-semibold border-b-2 pb-2", className)}>{text}</h2>
       );
     case 3:
       return <h3 className={cn("text-3xl font-medium", className)}>{text}</h3>;
