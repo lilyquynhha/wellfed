@@ -85,10 +85,10 @@ export function CreationComparison({
             </div>
           </div>
         </div>
-        {creations.map((c) => (
-          <div key={`${c.id}`}>
+        {creations.map((c, i) => (
+          <div key={`${c.id}`} className={i % 2 == 0 ? "bg-muted" : ""}>
             <div className="md:hidden">
-              <div className="sticky left-0 flex max-w-fit pl-2">
+              <div className="sticky left-0 flex w-[80vw] pl-2">
                 <p className="font-medium">{c.name}</p>
                 <Button
                   size="icon"
@@ -104,7 +104,9 @@ export function CreationComparison({
             </div>
 
             <div className="flex items-center mb-2 gap-2">
-              <div className="sticky left-0 w-48 bg-background">
+              <div
+                className={`sticky left-0 w-48 ${i % 2 == 0 ? "bg-muted" : "bg-background"}`}
+              >
                 <div className="hidden md:block pl-2">
                   <Button
                     size="icon"
@@ -120,7 +122,7 @@ export function CreationComparison({
                 </div>
               </div>
 
-              <div className="w-28">
+              <div className="w-28 pl-2">
                 <Field>
                   <Input
                     value={
@@ -144,11 +146,11 @@ export function CreationComparison({
                   />
                 </Field>
               </div>
-              <div className="w-24">
+              <div className="w-24 pl-2">
                 <p>{displayNumber(calc(c, "cost"))}</p>
               </div>
               {nutrients.map((n) => (
-                <div key={`${n.id}-total`} className="w-24">
+                <div key={`${n.id}-total`} className="w-24 pl-2">
                   <p
                     className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                   >

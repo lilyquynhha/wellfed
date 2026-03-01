@@ -58,9 +58,12 @@ export default function Page({
     );
     setError(response);
     if (!response) {
-      toast.success("Creation updated successfully!", {
-        position: "bottom-right",
-      });
+      toast.success(
+        `${creationType.charAt(0).toUpperCase() + creationType.slice(1).toLowerCase()} updated successfully!`,
+        {
+          position: "bottom-right",
+        },
+      );
     }
     setIsUpdating(false);
   };

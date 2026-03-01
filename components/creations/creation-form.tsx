@@ -324,10 +324,13 @@ export default function CreationForm({
                     </div>
                   </div>
                 </div>
-                {ingrs.map((i) => (
-                  <div key={`${i.ingr.serving_id}-${i.ingr.amount}`}>
+                {ingrs.map((i, idx) => (
+                  <div
+                    key={`${i.ingr.serving_id}-${i.ingr.amount}`}
+                    className={idx % 2 == 0 ? "bg-muted" : ""}
+                  >
                     <div className="md:hidden">
-                      <div className="sticky left-0 max-w-fit pl-2">
+                      <div className="sticky left-0 w-[80vw] pl-2">
                         <div className="flex">
                           {" "}
                           <Dialog>
@@ -345,14 +348,18 @@ export default function CreationForm({
                                 <DialogTitle>Edit Ingredient</DialogTitle>
                               </DialogHeader>
 
-                              <div className="no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto">
-                                <FoodCard
-                                  food={i.food}
-                                  servings={i.servings}
-                                  addIngr={(newIngr) => {
-                                    editIngr(i, newIngr);
-                                  }}
-                                />
+                              <div className="-mx-4 max-h-[50vh] overflow-y-hidden">
+                                <div className="h-[28rem] p-1 overflow-hidden">
+                                  <div className="h-full flex flex-col">
+                                    <FoodCard
+                                      food={i.food}
+                                      servings={i.servings}
+                                      addIngr={(newIngr) => {
+                                        editIngr(i, newIngr);
+                                      }}
+                                    />
+                                  </div>
+                                </div>
                               </div>
                             </DialogContent>
                           </Dialog>
@@ -366,13 +373,20 @@ export default function CreationForm({
                           >
                             <Trash2 size={16} />
                           </Button>
-                          <p className="font-medium">{i.food.name}</p>
+                          <div>
+                            <p className="font-medium ">{i.food.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {i.food.brand_name}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                     <div className="flex mb-2 gap-2 pb-2">
                       <div className="sticky left-0 w-48">
-                        <div className="hidden md:block bg-background">
+                        <div
+                          className={`hidden md:block ${idx % 2 == 0 ? "bg-muted" : "bg-background"}`}
+                        >
                           <Button
                             size="icon"
                             variant="ghost"
@@ -410,18 +424,21 @@ export default function CreationForm({
                             </DialogContent>
                           </Dialog>
                           <p className="font-medium pl-2">{i.food.name}</p>
+                          <p className="text-sm text-muted-foreground pl-2">
+                            {i.food.brand_name}
+                          </p>
                         </div>
                       </div>
-                      <div className="w-36">
+                      <div className="w-36 pl-2">
                         <p>
                           {`${i.ingr.amount} ${i.servings.find((s) => s.id == i.ingr.serving_id)?.display_serving_unit}`}
                         </p>
                       </div>
-                      <div className="w-24">
+                      <div className="w-24 pl-2">
                         <p>{displayNumber(calcAmount(i, "cost"), " AUD")}</p>
                       </div>
                       {nutrients.map((n) => (
-                        <div key={`${n.id}-each`} className="w-24">
+                        <div key={`${n.id}-each`} className="w-24 pl-2">
                           <p
                             className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                           >

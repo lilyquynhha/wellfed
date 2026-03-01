@@ -38,9 +38,12 @@ export default function Page() {
     );
     setError(response);
     if (!response) {
-      toast.success(`${creationType} created successfully!`, {
-        position: "bottom-center",
-      });
+      toast.success(
+        `${creationType.charAt(0).toUpperCase() + creationType.slice(1).toLowerCase()} created successfully!`,
+        {
+          position: "bottom-center",
+        },
+      );
     }
     setIsInserting(false);
   };

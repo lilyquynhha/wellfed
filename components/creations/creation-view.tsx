@@ -97,7 +97,7 @@ export function CreationView({
       </div>
 
       {/* Creation actions */}
-      <div className="flex justify-end gap-2 mb-2">
+      <div className="flex justify-end gap-2 my-2">
         <Button variant="secondary" size="sm">
           <Link href={`/my-creations/${selectedCreation.id}/edit`}>Edit</Link>
         </Button>
@@ -159,7 +159,7 @@ export function CreationView({
             return (
               <div key={`${i.serving.id}-${i.amount}`}>
                 <div className="md:hidden">
-                  <div className="sticky left-0 max-w-fit pl-2">
+                  <div className="sticky left-0 w-[80vw] pl-2">
                     <p className="font-medium">{i.food.name}</p>
                     <p className="text-sm text-muted-foreground">{i.food.brand_name}</p>
                   </div>
@@ -167,18 +167,18 @@ export function CreationView({
 
                 <div className="flex mb-2 md:mb-4 gap-2">
                   <div className="sticky left-0 w-48">
-                    <p className="hidden md:block font-medium bg-background pl-2">{i.food.name}</p>
+                    <p className="hidden md:block font-medium bg-background px-2">{i.food.name}</p>
                   </div>
-                  <div className="w-36">
+                  <div className="w-36 pl-2">
                     <p>
                       {`${displayNumber(i.amount * amount, " " + i.serving.display_serving_unit)}`}
                     </p>
                   </div>
-                  <div className="w-24">
+                  <div className="w-24 pl-2">
                     <p>{displayNumber(calcAmount(i, "cost"), " AUD")}</p>
                   </div>
                   {nutrients.map((n) => (
-                    <div key={`${n.id}-value`} className="w-24">
+                    <div key={`${n.id}-value`} className="w-24 pl-2">
                       <p
                         className={`${trackedNutrients.find((tn) => tn.nutrient_id == n.id) ? "text-highlight" : ""}`}
                       >
