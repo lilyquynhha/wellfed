@@ -4,7 +4,7 @@ import { ScrollArea } from "../ui/scroll-area";
 import { Card, CardContent } from "../ui/card";
 import Pagination from "../search-utilities/pagination";
 import { useState } from "react";
-import { spFood, spServing } from "@/lib/supabase/database-types";
+import { NewIngr, spFood, spServing } from "@/lib/supabase/database-types";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -25,6 +25,7 @@ export default function FoodsList({
   currentPage,
   setPage,
   onSelect,
+  addIngr,
 }: {
   foods: spFood[];
   selectedFoodServings: spServing[];
@@ -32,6 +33,7 @@ export default function FoodsList({
   currentPage: number;
   setPage: (page: number) => void;
   onSelect: (food: spFood) => void;
+  addIngr?: (i: NewIngr) => void;
 }) {
   const pathname = usePathname();
   const [chosenFood, setChosenFood] = useState<string | null>(null);
@@ -50,11 +52,11 @@ export default function FoodsList({
                   setChosenFood(f.id);
                 }}
               >
-                <CardContent className="flex justify-between">
+                <CardContent className="flex items-center justify-between">
                   <div>
                     <div className="flex gap-2 items-center">
                       <p className="font-medium">{f.name}</p>
-                      {pathname != "/" && f.is_public && (
+                      {pathname == "/my-foods/all" && f.is_public && (
                         <Star
                           size={15}
                           fill="hsl(var(--primary))"
@@ -91,6 +93,7 @@ export default function FoodsList({
                                   <FoodCard
                                     food={f}
                                     servings={selectedFoodServings}
+                                    addIngr={addIngr}
                                   />
                                 </div>
                               </div>

@@ -132,6 +132,7 @@ export function FoodSearchResult({
           setPage={setPage}
           totalPages={totalPages}
           onSelect={setSelectedFood}
+          addIngr={addIngr}
         />
 
         <div className="hidden md:block md:w-[50%] h-[28rem] p-1 overflow-hidden">
