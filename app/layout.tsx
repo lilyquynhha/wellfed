@@ -8,7 +8,7 @@ import Footer from "@/components/ui/footer";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+  : "https://wellf3d.vercel.app/";
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
