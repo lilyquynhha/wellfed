@@ -1,100 +1,223 @@
-# WellFed 🥗
+# WellFed
 
-**WellFed** is a nutrition-focused food tracking web app that empowers you to make informed dietary choices. Search and explore foods from a public database, build your own custom foods, construct meals and recipes, and monitor the nutritions that matter most to you - all in one place.
+WellFed is a full-stack web application for tracking nutritional information of foods, recipes, and meals. Users can search a public food database, create their own private foods, build meals and recipes from those foods, and monitor nutrients that matter to them.
 
-🔗 **Live demo:** [https://wellf3d.vercel.app/](https://wellf3d.vercel.app/)
+This project is being developed as both a practical nutrition tool and a learning project to gain hands-on experience designing, building, testing, and deploying a production-style full-stack application.
 
----
+## Project Goals
 
-## Features
+The primary purpose of WellFed is to demonstrate the ability to design and implement a complete software project from initial idea through deployment while following industry-standard development practices.
 
-### 📊 Personalised Nutrition Tracking
+Throughout this project I aim to:
 
-Choose exactly which nutrients you want to keep an eye on - whether that's carbohydrates, protein, fat, fibre, or micronutrients. WellFed surfaces only the data relevant to your goals.
+- Design a normalized PostgreSQL database from scratch
+- Build a secure backend using PostgreSQL Row Level Security (RLS)
+- Learn modern full-stack development with Next.js
+- Gain experience with Supabase Authentication and PostgreSQL
+- Use Prisma ORM for schema management and database migrations
+- Design scalable application architecture
+- Write automated tests for database security policies
+- Practice iterative software development
+- Strengthen debugging and troubleshooting skills
+- Produce maintainable, well-documented code
 
-### 🔍 Food Database Search & Favourites
+Rather than focusing only on the final application, this repository documents the engineering decisions, trade-offs, and lessons learned throughout development.
 
-Search from a public food database to find nutritional information on commonly consumed foods. Save items to your favourites list for quick access when logging meals.
+# Features
 
-### 🍎 Custom Foods & Side-by-Side Comparison
+## Authentication
 
-Create your own food entries with full nutritional detail. Compare any set of foods against each other on a standardised quantity basis to make smarter dietary decisions at a glance.
+- Email/password authentication
+- Email verification
+- Automatic profile creation after first sign in
+- Protected routes
+- Public routes
 
-### 🍽️ Meal & Recipe Builder
+## Food Management
 
-Construct meals and recipes from individual food items, then compare their nutritional profiles side by side - ideal for planning balanced menus or evaluating recipe variations.
+- Search public foods
+- Create private foods
+- Update private foods
+- Delete private foods
+- Favourite public foods
+- Multiple serving options per food
+- Custom serving cost overrides
 
----
+## Creations
 
-## Tech Stack
+- Create recipes
+- Create meals
+- Search owned creations
+- Add ingredients from foods
+- Modify ingredients
+- Automatic nutrition calculation
 
-| Layer                    | Technology                |
-| ------------------------ | ------------------------- |
-| **Language**             | TypeScript                |
-| **Frontend Framework**   | Next.js (App Router)      |
-| **UI Components**        | Shadcn UI                 |
-| **Database**             | PostgreSQL (via Supabase) |
-| **Backend-as-a-Service** | Supabase                  |
-| **Authentication**       | Supabase Auth             |
-| **ORM**                  | Prisma ORM                |
+## Nutrition Tracking
 
----
+- Track selected nutrients
+- Configure tracked nutrients
+- View nutritional breakdown
 
-## Project Purpose
+## Search
 
-WellFed was built as a personal project to demonstrate:
+- PostgreSQL Full Text Search
+- Partial text matching
+- Ranking using `ts_rank`
+- Pagination
+- Dedicated search functions for different use cases
 
-- **Independent learning of new technologies**: hands-on exploration of Next.js App Router, Supabase as a backend platform, and Prisma ORM, all learned and applied from scratch throughout the project.
-- **Full database design and development**: a complete end-to-end process from schema design and data modelling through to migrations and query optimisation using Prisma and PostgreSQL.
-- **User-centred design**: UI and feature decisions driven by real user needs, with an emphasis on clarity, usability, and meaningful feedback.
-- **Authentication**: secure, session-based user authentication implemented via Supabase Auth, supporting protected routes and per-user data.
-- **Iterative development**: built incrementally with continuous refinement of both the codebase and the user experience across 78+ commits.
+# Tech Stack
 
----
+- Next.js (App Router)
+- React
+- TypeScript
+- Supabase, Supabase Auth
+- PostgreSQL, RLS
+- Prisma ORM
+- Vitest
 
-## Getting Started
+# Database Highlights
 
-### Prerequisites
+- PostgreSQL
+- Explicit join tables
+- Soft deletion
+- Full Text Search (`tsvector`)
+- Partial unique indexes
+- Row Level Security
+- Custom SQL functions (RPC)
+- Generated columns
+- Prisma migrations
 
-- [Node.js](https://nodejs.org/) (v18+)
-- [pnpm](https://pnpm.io/)
-- A [Supabase](https://supabase.com/) project
+# Running Locally
 
-### Installation
+## Prerequisites
 
-1. **Clone the repository**
+- Node.js
+- pnpm
+- Supabase project
+- PostgreSQL (managed by Supabase)
 
-   ```bash
-   git clone https://github.com/lilyquynhha/wellfed.git
-   cd wellfed
-   ```
+## Installation
 
-2. **Install dependencies**
+Clone the repository
 
-   ```bash
-   pnpm install
-   ```
+```bash
+git clone <repository-url>
+cd wellfed
+```
 
-3. **Set up environment variables**
+Install dependencies
 
-   Create a `.env.local` file in the root directory and add your Supabase credentials:
+```bash
+pnpm install
+```
 
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_or_publishable_key
-   DATABASE_URL=your_supabase_database_connection_string
-   ```
+Create an environment file
 
-4. **Apply database migrations**
+```text
+.env.local
+```
 
-   ```bash
-   pnpm prisma migrate dev
-   ```
+Configure the required environment variables
 
-5. **Start the development server**
+```text
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SECRET_KEY=
 
-   ```bash
-   pnpm dev
-   ```
+DATABASE_URL=
+DIRECT_URL=
+SHADOW_DATABASE_URL=
+```
 
-   The app will be running at [http://localhost:3000](http://localhost:3000).
+Run database migrations
+
+```bash
+pnpm prisma migrate deploy
+```
+
+Run the development server
+
+```bash
+pnpm dev
+```
+
+Open
+
+```
+http://localhost:3000
+```
+
+# Project Structure
+
+```
+app/
+    Application routes
+
+components/
+    Reusable UI components
+
+lib/
+    Shared utilities
+    Supabase clients
+    Prisma helpers
+
+prisma/
+    Prisma schema
+    SQL migrations
+    Seed scripts
+
+tests/
+    RLS policy tests
+```
+
+# Security
+
+WellFed uses PostgreSQL Row Level Security extensively.
+
+Users can only access data they are authorized to view.
+
+Examples include:
+
+- Users can only modify their own profile.
+- Users can only manage their own private foods.
+- Users can only modify their own recipes.
+- Public foods are read-only except for administrators.
+- Administrative operations are protected through RLS policies.
+
+Database permissions are enforced by PostgreSQL rather than relying solely on application code.
+
+# Testing
+
+The project includes automated tests covering Row Level Security policies.
+
+Tests verify both allowed and denied operations, including:
+
+- authenticated users
+- anonymous users
+- administrators
+- resource ownership
+
+# Known Limitations
+
+Current limitations include:
+
+- Search does not yet support typo correction (trigram search).
+- Search ranking is relatively simple.
+- No barcode scanning.
+- No image upload.
+- Limited performance optimisation for very large datasets.
+
+# Future Improvements
+
+Potential future enhancements include:
+
+- Trigram search for typo tolerance
+- Search suggestions and autocomplete
+- Barcode scanner
+- Food labels and categories
+- Nutrition goals
+- Daily food logging
+- Charts and analytics
+- Recipe sharing
+- Performance optimisation
