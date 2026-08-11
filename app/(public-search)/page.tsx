@@ -5,20 +5,21 @@ import { Button } from "@/components/ui/button";
 import { FoodSearchResultSkeleton } from "@/components/ui/skeleton";
 import { MAX_RESULTS } from "@/lib/actions/food/food-crud";
 import { createClient } from "@/lib/supabase/client";
-import { spFood } from "@/lib/supabase/database-types";
+import { spFood, spNutrient, spServing } from "@/lib/supabase/database-types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { FoodSearchResult } from "@/components/search-utilities/search-results";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { Heading } from "@/components/typography";
+import FoodComparison from "@/components/foods/food-comparison";
+import { fetchNutrients } from "@/lib/actions/nutrient/nutrient-crud";
 
 export default function Page() {
   const router = useRouter();
@@ -26,12 +27,22 @@ export default function Page() {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>(null);
 
+  const [nutrients, setNutrients] = useState<spNutrient[]>([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const [foundFoods, setFoundFoods] = useState<spFood[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFood, setSelectedFood] = useState<spFood>();
+  const [selectedFoodServings, setSelectedFoodServings] = useState<spServing[]>(
+    [],
+  );
+  const [isServingsFetched, setIsServingsFetched] = useState(false);
+
+  // Food comparison
+  const [compareFoods, setCompareFoods] = useState<spFood[]>([]);
+  const [compareServings, setCompareServings] = useState<spServing[]>([]);
 
   const handleFavouriteFood = async (f: spFood) => {
     if (!user) {
@@ -57,6 +68,31 @@ export default function Page() {
     });
   };
 
+  const addFoodToCompare = () => {
+    if (!selectedFood) return;
+    if (compareFoods.find((f) => f.id === selectedFood.id)) return;
+
+    const updatedFoods = new Array(...compareFoods);
+    updatedFoods.push(selectedFood);
+
+    const updatedServings = new Array(...compareServings);
+    updatedServings.push(...selectedFoodServings);
+
+    setCompareFoods(updatedFoods);
+    setCompareServings(updatedServings);
+  };
+
+  const removeFoodFromCompare = (food: spFood) => {
+    const updatedFoods = compareFoods.filter((f) => f.id != food.id);
+
+    const updatedServings = compareServings.filter(
+      (s) => s.owner_food_id != food.id,
+    );
+
+    setCompareFoods(updatedFoods);
+    setCompareServings(updatedServings);
+  };
+
   useEffect(() => {
     async function getUser() {
       const {
@@ -66,6 +102,17 @@ export default function Page() {
       return user;
     }
     getUser().then(setUser);
+  }, []);
+
+  // Fetch nutrients
+  useEffect(() => {
+    const fetchData = async () => {
+      const nutrientsData = await fetchNutrients(supabase);
+
+      setNutrients(nutrientsData);
+    };
+
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -82,6 +129,7 @@ export default function Page() {
       const { data: count } = await supabase.rpc("count_foods_public", {
         query: searchQuery,
       });
+      console.log(`query: ${searchQuery}, count is ${count}`);
 
       if (count > 0) {
         const totalPages = Math.ceil(count / MAX_RESULTS);
@@ -110,6 +158,13 @@ export default function Page() {
 
     fetchFoods();
   }, [searchQuery, page]);
+
+  // Ensure servings finish fetching for selected food
+  useEffect(() => {
+    if (selectedFoodServings.find((s) => s.owner_food_id == selectedFood?.id))
+      setIsServingsFetched(true);
+    else setIsServingsFetched(false);
+  }, [selectedFood, selectedFoodServings]);
 
   return (
     <>
@@ -153,7 +208,9 @@ export default function Page() {
                 </div>
 
                 <div>
-                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">Vegetables</h4>
+                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">
+                    Vegetables
+                  </h4>
                   <ul className="list-disc ml-4 text-sm">
                     <div className="md:grid grid-cols-2">
                       <li>Asparagus</li>
@@ -184,7 +241,9 @@ export default function Page() {
                 </div>
 
                 <div>
-                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">Fruits</h4>
+                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">
+                    Fruits
+                  </h4>
                   <ul className="list-disc ml-4 text-sm">
                     <div className="md:grid grid-cols-2">
                       <li>Apples</li>
@@ -214,7 +273,9 @@ export default function Page() {
                 </div>
 
                 <div>
-                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">Dairy & Alternatives</h4>
+                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">
+                    Dairy & Alternatives
+                  </h4>
                   <ul className="list-disc ml-4 text-sm">
                     <div className="md:grid grid-cols-2">
                       <li>Almond Milk</li>
@@ -236,7 +297,9 @@ export default function Page() {
                 </div>
 
                 <div>
-                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">Grains, Breads, & Pasta</h4>
+                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">
+                    Grains, Breads, & Pasta
+                  </h4>
                   <ul className="list-disc ml-4 text-sm">
                     <div className="md:grid grid-cols-2">
                       <li>All-Purpose Flour</li>
@@ -257,7 +320,9 @@ export default function Page() {
                 </div>
 
                 <div>
-                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">Nuts, Seeds, & Legumes</h4>
+                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">
+                    Nuts, Seeds, & Legumes
+                  </h4>
                   <ul className="list-disc ml-4 text-sm">
                     <div className="md:grid grid-cols-2">
                       <li>Almonds</li>
@@ -269,7 +334,9 @@ export default function Page() {
                 </div>
 
                 <div>
-                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">Fats & Oils</h4>
+                  <h4 className="sticky top-0 bg-card font-semibold border-b-2 mb-2 pb-1">
+                    Fats & Oils
+                  </h4>
                   <ul className="list-disc ml-4 text-sm">
                     <div className="md:grid grid-cols-2">
                       <li>Coconut Oil</li>
@@ -322,6 +389,17 @@ export default function Page() {
             >
               Favourite
             </Button>
+
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={isLoading || !isServingsFetched}
+              onClick={() => {
+                addFoodToCompare();
+              }}
+            >
+              Compare
+            </Button>
           </div>
         </>
       )}
@@ -336,8 +414,18 @@ export default function Page() {
             page={page}
             setPage={setPage}
             onSelectedFood={setSelectedFood}
+            onSelectedFoodServings={setSelectedFoodServings}
           />
         ))}
+
+      {/* Compare foods */}
+      <FoodComparison
+        nutrients={nutrients}
+        trackedNutrients={[]}
+        foods={compareFoods}
+        servings={compareServings}
+        removeFood={removeFoodFromCompare}
+      />
     </>
   );
 }
